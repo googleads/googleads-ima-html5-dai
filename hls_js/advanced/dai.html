@@ -1,0 +1,51 @@
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/hls.js/latest/hls.min.js"></script>
+  <script type="text/javascript" src="https://imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script>
+  <script src="dai.js"></script>
+  <link rel="stylesheet" href="dai.css" type="text/css">
+</head>
+<body onLoad="initPage()">
+  <div id="container">
+    <header>IMA SDK DAI Demo (HLS.JS)</header>
+
+    <div id="input-wrapper">
+      <strong>Stream type:</strong>
+      <div class="radio-group">
+        <input type="radio" id="live-radio" name="stream-type" checked/>
+        <label for="live-radio">Live (<span id="sample-live-link" class="link">Sample</span>)</label>
+      </div>
+      <div class="radio-group">
+        <input type="radio" id="vod-radio" name="stream-type"/>
+        <label for="vod-radio">VOD (<span id="sample-vod-link" class="link">Sample</span>)</label>
+      </div>
+      <div id="live-inputs" class="input-group">
+        <label for="asset-key" class="input-group">Asset key: </label>
+        <input type="text" id="asset-key" class="input-group"/><br />
+        <label for="live-api-key" class="input-group">API Key (optional): </label>
+        <input type="text" id="live-api-key" class="input-group"/>
+      </div>
+      <div id="vod-inputs" class="input-group">
+        <label for="cms-id" class="input-group">CMS ID: </label>
+        <input type="text" id="cms-id"/>
+        <label for="video-id" class="input-group">Video ID: </label>
+        <input type="text" id="video-id" class="input-group"/><br />
+        <label for="vod-api-key" class="input-group">API Key (optional): </label>
+        <input type="text" id="vod-api-key" class="input-group"/>
+      </div>
+    </div>
+
+    <div id="video-player">
+      <video id="content"></video>
+      <div id="click"></div>
+      <div id="ad-ui"></div>
+    </div>
+    <div id="buttons">
+      <button id="play-button" class="button">Play</button>
+      <button id="bookmark-button" class="button">Save Bookmark to URL</button>
+    </div>
+    <div id="companion"></div>
+  </div>
+</body>
+</html>
+
