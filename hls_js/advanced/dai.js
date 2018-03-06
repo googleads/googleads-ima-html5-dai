@@ -9,8 +9,8 @@ var TEST_ASSET_KEY = "sN_IYUG8STe1ZzhIIE_ksA";
 // VOD content source and video IDs.
 //var TEST_CONTENT_SOURCE_ID = "19463";
 //var TEST_VIDEO_ID = "tears-of-steel";
-var TEST_CONTENT_SOURCE_ID = '19823';
-var TEST_VIDEO_ID = 'ima-test';
+var TEST_CONTENT_SOURCE_ID = '19463';
+var TEST_VIDEO_ID = 'tears-of-steel';
 
 // StreamManager which will be used to request ad-enabled streams.
 var streamManager;
