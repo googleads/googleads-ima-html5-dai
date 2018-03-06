@@ -4,8 +4,9 @@ This project hosts samples for the [HTML5 DAI IMA SDK](https://developers.google
 
 ### Samples breakdown
   [HLS.js simple](https://github.com/googleads/googleads-ima-html5-dai/tree/master/hls_js/simple) - Simple example using HLS.js.
+
   [HLS.js advanced](https://github.com/googleads/googleads-ima-html5-dai/tree/master/hls_js/advanced) - Advanced example using HLS.js.
-  [JW](https://github.com/googleads/googleads-ima-html5-dai/tree/master/jw) - Simple example using JW player.
+
   [DAI Pre-roll](https://github.com/googleads/googleads-ima-html5-dai/tree/master/dai_preroll) - Demonstrates using the IMA client-side SDK to request a pre-roll ad, then the IMA DAI SDK to play a DAI stream with mid-rolls.
 
 ### Requirements
