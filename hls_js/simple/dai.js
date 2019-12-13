@@ -1,15 +1,14 @@
 // This stream will be played if ad-enabled playback fails.
-
 var BACKUP_STREAM =
     'http://storage.googleapis.com/testtopbox-public/video_content/bbb/' +
     'master.m3u8';
 
 // Live stream asset key.
-var TEST_ASSET_KEY = 'sN_IYUG8STe1ZzhIIE_ksA';
+var TEST_ASSET_KEY = "sN_IYUG8STe1ZzhIIE_ksA";
 
 // VOD content source and video IDs.
-var TEST_CONTENT_SOURCE_ID = '2528370';
-var TEST_VIDEO_ID = 'tears-of-steel';
+var TEST_CONTENT_SOURCE_ID = "19463";
+var TEST_VIDEO_ID = "tears-of-steel";
 
 // StreamManager which will be used to request ad-enabled streams.
 var streamManager;
@@ -20,25 +19,24 @@ var hls = new Hls();
 // Video element
 var videoElement;
 
-// Ad UI element
-var adUiElement;
+// Click element
+var clickElement;
 
 /**
  * Initializes the video player.
  */
 function initPlayer() {
   videoElement = document.getElementById('video');
-  adUiElement = document.getElementById('adUi');
-  streamManager =
-      new google.ima.dai.api.StreamManager(videoElement, adUiElement);
+  clickElement = document.getElementById('click');
+  streamManager = new google.ima.dai.api.StreamManager(videoElement);
+  streamManager.setClickElement(clickElement);
   streamManager.addEventListener(
-      [
-        google.ima.dai.api.StreamEvent.Type.LOADED,
-        google.ima.dai.api.StreamEvent.Type.ERROR,
-        google.ima.dai.api.StreamEvent.Type.AD_BREAK_STARTED,
-        google.ima.dai.api.StreamEvent.Type.AD_BREAK_ENDED
-      ],
-      onStreamEvent, false);
+    [google.ima.dai.api.StreamEvent.Type.LOADED,
+     google.ima.dai.api.StreamEvent.Type.ERROR,
+     google.ima.dai.api.StreamEvent.Type.AD_BREAK_STARTED,
+     google.ima.dai.api.StreamEvent.Type.AD_BREAK_ENDED],
+    onStreamEvent,
+    false);
 
   // Add metadata listener. Only used in LIVE streams. Timed metadata
   // is handled differently by different video players, and the IMA SDK provides
@@ -61,7 +59,7 @@ function initPlayer() {
 
   requestVODStream(TEST_CONTENT_SOURCE_ID, TEST_VIDEO_ID, null);
   // Uncomment line below and comment one above to request a LIVE stream.
-  // requestLiveStream(TEST_ASSET_KEY, null);
+  //requestLiveStream(TEST_ASSET_KEY, null);
 }
 
 /**
@@ -107,12 +105,12 @@ function onStreamEvent(e) {
     case google.ima.dai.api.StreamEvent.Type.AD_BREAK_STARTED:
       console.log('Ad Break Started');
       videoElement.controls = false;
-      adUiElement.style.display = 'block';
+      clickElement.style.display = 'block';
       break;
     case google.ima.dai.api.StreamEvent.Type.AD_BREAK_ENDED:
       console.log('Ad Break Ended');
       videoElement.controls = true;
-      adUiElement.style.display = 'none';
+      clickElement.style.display = 'none';
       break;
     default:
       break;

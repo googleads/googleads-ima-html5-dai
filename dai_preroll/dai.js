@@ -3,16 +3,15 @@
 // the same page.
 
 // This stream will be played if ad-enabled playback fails.
-
 var BACKUP_STREAM =
     'http://storage.googleapis.com/testtopbox-public/video_content/bbb/' +
     'master.m3u8';
 
 // Live stream asset key.
-var TEST_ASSET_KEY = 'sN_IYUG8STe1ZzhIIE_ksA';
+var TEST_ASSET_KEY = "sN_IYUG8STe1ZzhIIE_ksA";
 
 // Preroll ad tag
-var TEST_AD_TAG = 'https://pubads.g.doubleclick.net/gampad/ads?' +
+var TEST_AD_TAG =  'https://pubads.g.doubleclick.net/gampad/ads?' +
     'sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&' +
     'impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&' +
     'cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=';
@@ -31,32 +30,24 @@ var hls = new Hls();
 // Video element
 var videoElement;
 
-// Ad UI element
-var adUiElement;
-
-// Whether the stream is currently in an ad break.
-var isAdBreak;
+// Click element
+var clickElement;
 
 /**
  * Initializes the video player.
  */
 function initPlayer() {
   videoElement = document.getElementById('video');
-  adUiElement = document.getElementById('adUi');
-
-  videoElement.addEventListener('pause', onStreamPause);
-  videoElement.addEventListener('play', onStreamPlay);
-
-  streamManager =
-      new google.ima.dai.api.StreamManager(videoElement, adUiElement);
+  clickElement = document.getElementById('click');
+  streamManager = new google.ima.dai.api.StreamManager(videoElement);
+  streamManager.setClickElement(clickElement);
   streamManager.addEventListener(
-      [
-        google.ima.dai.api.StreamEvent.Type.LOADED,
-        google.ima.dai.api.StreamEvent.Type.ERROR,
-        google.ima.dai.api.StreamEvent.Type.AD_BREAK_STARTED,
-        google.ima.dai.api.StreamEvent.Type.AD_BREAK_ENDED
-      ],
-      onStreamEvent, false);
+    [google.ima.dai.api.StreamEvent.Type.LOADED,
+     google.ima.dai.api.StreamEvent.Type.ERROR,
+     google.ima.dai.api.StreamEvent.Type.AD_BREAK_STARTED,
+     google.ima.dai.api.StreamEvent.Type.AD_BREAK_ENDED],
+    onStreamEvent,
+    false);
 
   // Client side ads setup.
   adDisplayContainer = new google.ima.AdDisplayContainer(
@@ -66,9 +57,12 @@ function initPlayer() {
   adsLoader = new google.ima.AdsLoader(adDisplayContainer);
   adsLoader.addEventListener(
       google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
-      onAdsManagerLoaded, false);
+      onAdsManagerLoaded,
+      false);
   adsLoader.addEventListener(
-      google.ima.AdErrorEvent.Type.AD_ERROR, onAdError, false);
+      google.ima.AdErrorEvent.Type.AD_ERROR,
+      onAdError,
+      false);
 
   // Add metadata listener. Only used in LIVE streams. Timed metadata
   // is handled differently by different video players, and the IMA SDK provides
@@ -108,13 +102,15 @@ function onAdError(adErrorEvent) {
  */
 function onAdsManagerLoaded(adsManagerLoadedEvent) {
   adsManager = adsManagerLoadedEvent.getAdsManager(videoElement);
-  adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
   adsManager.addEventListener(
-      google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, function(e) {
-        console.log('Content pause requested.');
-      });
+      google.ima.AdErrorEvent.Type.AD_ERROR,
+      onAdError);
   adsManager.addEventListener(
-      google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, function(e) {
+      google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
+      function(e) { console.log('Content pause requested.'); });
+  adsManager.addEventListener(
+      google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED,
+      function(e) {
         console.log('Content resume requested.');
         requestLiveStream(TEST_ASSET_KEY, null);
       });
@@ -166,15 +162,13 @@ function onStreamEvent(e) {
       break;
     case google.ima.dai.api.StreamEvent.Type.AD_BREAK_STARTED:
       console.log('Ad Break Started');
-      isAdBreak = true;
       videoElement.controls = false;
-      adUiElement.style.display = 'block';
+      clickElement.style.display = 'block';
       break;
     case google.ima.dai.api.StreamEvent.Type.AD_BREAK_ENDED:
       console.log('Ad Break Ended');
-      isAdBreak = false;
       videoElement.controls = true;
-      adUiElement.style.display = 'none';
+      clickElement.style.display = 'none';
       break;
     default:
       break;
@@ -193,26 +187,4 @@ function loadUrl(url) {
     console.log('Video Play');
     videoElement.play();
   });
-}
-
-/**
- * Shows the video controls so users can resume after stream is paused.
- */
-function onStreamPause() {
-  console.log('paused');
-  if (isAdBreak) {
-    videoElement.controls = true;
-    adUiDiv.style.display = 'none';
-  }
-}
-
-/**
- * Hides the video controls if resumed during an ad break.
- */
-function onStreamPlay() {
-  console.log('played');
-  if (isAdBreak) {
-    videoElement.controls = false;
-    adUiDiv.style.display = 'block';
-  }
 }

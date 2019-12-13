@@ -1,14 +1,13 @@
 // This stream will be played if ad-enabled playback fails.
-
 var BACKUP_STREAM =
     'http://storage.googleapis.com/testtopbox-public/video_content/bbb/' +
     'master.m3u8';
 
 // Live stream asset key.
-var TEST_ASSET_KEY = 'sN_IYUG8STe1ZzhIIE_ksA';
+var TEST_ASSET_KEY = "sN_IYUG8STe1ZzhIIE_ksA";
 
 // VOD content source and video IDs.
-var TEST_CONTENT_SOURCE_ID = '2528370';
+var TEST_CONTENT_SOURCE_ID = '19463';
 var TEST_VIDEO_ID = 'tears-of-steel';
 
 // StreamManager which will be used to request ad-enabled streams.
@@ -80,9 +79,6 @@ var bookmarkTime;
 // Whether we are currently playing a live stream or a VOD stream
 var isLiveStream;
 
-// Whether the stream is currently in an ad break.
-var isAdBreak;
-
 /**
  * Initializes the page.
  */
@@ -121,6 +117,7 @@ function initUI() {
     cmsIdInput.value = TEST_CONTENT_SOURCE_ID;
     videoIdInput.value = TEST_VIDEO_ID;
   });
+
 }
 
 /**
@@ -138,24 +135,32 @@ function initPlayer() {
   bookmarkTime = parseInt(queryParams['bookmark']) || null;
 
   videoElement.addEventListener('seeked', onSeekEnd);
-  videoElement.addEventListener('pause', onStreamPause);
-  videoElement.addEventListener('play', onStreamPlay);
 
   streamManager = new google.ima.dai.api.StreamManager(videoElement, adUiDiv);
   streamManager.addEventListener(
-      google.ima.dai.api.StreamEvent.Type.LOADED, onStreamLoaded, false);
-  streamManager.addEventListener(
-      google.ima.dai.api.StreamEvent.Type.ERROR, onStreamError, false);
-  streamManager.addEventListener(
-      google.ima.dai.api.StreamEvent.Type.AD_PROGRESS, onAdProgress, false);
-  streamManager.addEventListener(
-      google.ima.dai.api.StreamEvent.Type.AD_BREAK_STARTED, onAdBreakStarted,
+      google.ima.dai.api.StreamEvent.Type.LOADED,
+      onStreamLoaded,
       false);
   streamManager.addEventListener(
-      google.ima.dai.api.StreamEvent.Type.AD_BREAK_ENDED, onAdBreakEnded,
+      google.ima.dai.api.StreamEvent.Type.ERROR,
+      onStreamError,
       false);
   streamManager.addEventListener(
-      google.ima.dai.api.StreamEvent.Type.STARTED, onAdStarted, false);
+      google.ima.dai.api.StreamEvent.Type.AD_PROGRESS,
+      onAdProgress,
+      false);
+  streamManager.addEventListener(
+      google.ima.dai.api.StreamEvent.Type.AD_BREAK_STARTED,
+      onAdBreakStarted,
+      false);
+  streamManager.addEventListener(
+      google.ima.dai.api.StreamEvent.Type.AD_BREAK_ENDED,
+      onAdBreakEnded,
+      false);
+  streamManager.addEventListener(
+      google.ima.dai.api.StreamEvent.Type.STARTED,
+      onAdStarted,
+      false);
 
   hls.on(Hls.Events.FRAG_PARSING_METADATA, function(event, data) {
     if (streamManager && data) {
@@ -195,7 +200,7 @@ function onVODRadioClick() {
 function getQueryParams() {
   var returnVal = {};
   var pairs = location.search.substring(1).split('&');
-  for (var i = 0; i < pairs.length; i++) {
+  for (var i=0; i<pairs.length; i++) {
     var pair = pairs[i].split('=');
     returnVal[pair[0]] = decodeURIComponent(pair[1]);
   }
@@ -220,8 +225,7 @@ function onPlayButtonClick() {
 function onBookmarkButtonClick() {
   // Handles player not ready or current time = 0
   if (!videoElement.currentTime) {
-    alert(
-        'Error: could not get current time of video element, or current time is 0');
+    alert('Error: could not get current time of video element, or current time is 0');
     return;
   }
   if (isLiveStream) {
@@ -294,7 +298,6 @@ function onAdProgress(e) {
  */
 function onAdBreakStarted(e) {
   console.log('Ad Break Started');
-  isAdBreak = true;
   videoElement.controls = false;
   adUiDiv.style.display = 'block';
   // Fixes an issue where slow-seeking into an ad causes the player to get stuck
@@ -308,14 +311,13 @@ function onAdBreakStarted(e) {
  */
 function onAdBreakEnded(e) {
   console.log('Ad Break Ended');
-  isAdBreak = false;
   videoElement.controls = true;
   adUiDiv.style.display = 'none';
   if (snapForwardTime && snapForwardTime > videoElement.currentTime) {
     videoElement.currentTime = snapForwardTime;
     snapForwardTime = null;
   }
-  progressDiv.textContent = '';
+  progressDiv.innerHTML = '';
 }
 
 /**
@@ -323,7 +325,7 @@ function onAdBreakEnded(e) {
  */
 function onAdStarted(e) {
   var companionAds = e.getAd().getCompanionAds();
-  for (var i = 0; i < companionAds.length; i++) {
+  for (var i=0; i<companionAds.length; i++) {
     var companionAd = companionAds[i];
     if (companionAd.getWidth() == 728 && companionAd.getHeight() == 90) {
       companionDiv.innerHTML = companionAd.getContent();
@@ -348,9 +350,7 @@ function loadUrl(url) {
       isSnapback = true;
     }
     hls.startLoad(startTime);
-    videoElement.addEventListener('loadedmetadata', () => {
-      videoElement.play();
-    });
+    videoElement.addEventListener('loadedmetadata', () => { videoElement.play(); });
   });
   hls.loadSource(url);
   hls.attachMedia(videoElement);
@@ -362,9 +362,7 @@ function loadUrl(url) {
  * played.
  */
 function onSeekEnd() {
-  if (isLiveStream) {
-    return;
-  }
+  if (isLiveStream) { return; }
   if (isSnapback) {
     isSnapback = false;
     return;
@@ -373,33 +371,10 @@ function onSeekEnd() {
   var previousCuePoint =
       streamManager.previousCuePointForStreamTime(currentTime);
   if (previousCuePoint && !previousCuePoint.played) {
-    console.log(
-        'Seeking back to ' + previousCuePoint.start + ' and will return to ' +
-        currentTime);
+    console.log('Seeking back to ' + previousCuePoint.start +
+        ' and will return to ' + currentTime);
     isSnapback = true;
     snapForwardTime = currentTime;
     videoElement.currentTime = previousCuePoint.start;
-  }
-}
-
-/**
- * Shows the video controls so users can resume after stream is paused.
- */
-function onStreamPause() {
-  console.log('paused');
-  if (isAdBreak) {
-    videoElement.controls = true;
-    adUiDiv.style.display = 'none';
-  }
-}
-
-/**
- * Hides the video controls if resumed during an ad break.
- */
-function onStreamPlay() {
-  console.log('played');
-  if (isAdBreak) {
-    videoElement.controls = false;
-    adUiDiv.style.display = 'block';
   }
 }
