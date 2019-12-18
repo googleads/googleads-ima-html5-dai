@@ -7,8 +7,6 @@ var BACKUP_STREAM =
 var TEST_ASSET_KEY = "sN_IYUG8STe1ZzhIIE_ksA";
 
 // VOD content source and video IDs.
-//var TEST_CONTENT_SOURCE_ID = "19463";
-//var TEST_VIDEO_ID = "tears-of-steel";
 var TEST_CONTENT_SOURCE_ID = '19463';
 var TEST_VIDEO_ID = 'tears-of-steel';
 
@@ -63,8 +61,8 @@ var bookmarkButton;
 // Companion ad div.
 var companionDiv;
 
-// Click element.
-var clickElement;
+// Div showing current ad progress.
+var progressDiv;
 
 // Ad UI div.
 var adUiDiv;
@@ -127,10 +125,10 @@ function initUI() {
  */
 function initPlayer() {
   videoElement = document.getElementById('content');
-  clickElement = document.getElementById('click');
   playButton = document.getElementById('play-button');
   bookmarkButton = document.getElementById('bookmark-button');
   adUiDiv = document.getElementById('ad-ui');
+  progressDiv = document.getElementById('progress');
   companionDiv = document.getElementById('companion');
 
   var queryParams = getQueryParams();
@@ -138,8 +136,7 @@ function initPlayer() {
 
   videoElement.addEventListener('seeked', onSeekEnd);
 
-  streamManager = new google.ima.dai.api.StreamManager(videoElement);
-  streamManager.setClickElement(clickElement);
+  streamManager = new google.ima.dai.api.StreamManager(videoElement, adUiDiv);
   streamManager.addEventListener(
       google.ima.dai.api.StreamEvent.Type.LOADED,
       onStreamLoaded,
@@ -197,7 +194,6 @@ function onVODRadioClick() {
 
 /**
  * Returns a dictionary of key-value pairs from a GET query string.
- *
  * @return{Object} Key-value dictionary for keys and values in provided query
  *     string.
  */
@@ -265,7 +261,6 @@ function requestVODStream() {
 
 /**
  * Loads the stream.
- *
  * @param{StreamEvent} e StreamEvent fired when stream is loaded.
  */
 function onStreamLoaded(e) {
@@ -275,7 +270,6 @@ function onStreamLoaded(e) {
 
 /**
  * Handles stream errors. Plays backup content.
- *
  * @param{StreamEvent} e StreamEvent fired on stream error.
  */
 function onStreamError(e) {
@@ -284,8 +278,7 @@ function onStreamError(e) {
 }
 
 /**
- * Updates the ad UI.
- *
+ * Updates the progress div.
  * @param{StreamEvent} e StreamEvent fired when ad progresses.
  */
 function onAdProgress(e) {
@@ -295,20 +288,17 @@ function onAdProgress(e) {
   var currentTime = adProgressData.currentTime;
   var duration = adProgressData.duration;
   var remainingTime = Math.floor(duration - currentTime);
-
-  adUiDiv.innerHTML = 'Advertisement (' + currentAdNum + ' of ' + totalAds +
-      ') ' + remainingTime + 's';
+  progressDiv.innerHTML =
+      'Ad (' + currentAdNum + ' of ' + totalAds + ') ' + remainingTime + 's';
 }
 
 /**
  * Handles ad break started.
- *
  * @param{StreamEvent} e StreamEvent fired for ad break start.
  */
 function onAdBreakStarted(e) {
   console.log('Ad Break Started');
   videoElement.controls = false;
-  clickElement.style.display = 'block';
   adUiDiv.style.display = 'block';
   // Fixes an issue where slow-seeking into an ad causes the player to get stuck
   // in a paused state.
@@ -317,18 +307,17 @@ function onAdBreakStarted(e) {
 
 /**
  * Handles ad break ended.
- *
  * @param{StreamEvent} e Stream event fired for ad break end.
  */
 function onAdBreakEnded(e) {
   console.log('Ad Break Ended');
   videoElement.controls = true;
-  clickElement.style.display = 'none';
   adUiDiv.style.display = 'none';
   if (snapForwardTime && snapForwardTime > videoElement.currentTime) {
     videoElement.currentTime = snapForwardTime;
     snapForwardTime = null;
   }
+  progressDiv.innerHTML = '';
 }
 
 /**

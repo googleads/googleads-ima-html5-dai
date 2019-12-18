@@ -59,12 +59,7 @@ input[type="text"] {
   background-color: black;
 }
 
-#click {
-  cursor: pointer;
-  display: none;
-}
-
-#content, #click {
+#content, #ad-ui {
   position: absolute;
   top: 0px;
   left: 0px;
@@ -87,6 +82,14 @@ input[type="text"] {
   text-align: center;
 }
 
+#progress {
+  height: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  padding: 10px;
+}
+
 .button {
   margin: 0 auto;
   display: inline;
@@ -103,15 +106,6 @@ input[type="text"] {
   cursor: pointer;
   -webkit-box-shadow: inset 0 -2px #22303f;
   box-shadow: inset 0 -2px #22303f;
-}
-
-#ad-ui {
-  display: none;
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  background-color: gray;
-  padding: 5px;
 }
 
 #play-button {
