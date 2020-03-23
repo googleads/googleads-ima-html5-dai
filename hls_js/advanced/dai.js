@@ -7,7 +7,7 @@ var BACKUP_STREAM =
 var TEST_ASSET_KEY = "sN_IYUG8STe1ZzhIIE_ksA";
 
 // VOD content source and video IDs.
-var TEST_CONTENT_SOURCE_ID = '19463';
+var TEST_CONTENT_SOURCE_ID = '2528370';
 var TEST_VIDEO_ID = 'tears-of-steel';
 
 // StreamManager which will be used to request ad-enabled streams.

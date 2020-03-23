@@ -7,7 +7,7 @@ const BACKUP_STREAM =
 const TEST_ASSET_KEY = "sN_IYUG8STe1ZzhIIE_ksA";
 
 // VOD content source and video IDs.
-const TEST_CONTENT_SOURCE_ID = "19463";
+const TEST_CONTENT_SOURCE_ID = '2528370';
 const TEST_VIDEO_ID = "tears-of-steel";
 
 // StreamManager which will be used to request ad-enabled streams.
