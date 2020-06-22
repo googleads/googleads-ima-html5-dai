@@ -317,7 +317,7 @@ function onAdBreakEnded(e) {
     videoElement.currentTime = snapForwardTime;
     snapForwardTime = null;
   }
-  progressDiv.innerHTML = '';
+  progressDiv.textContent = '';
 }
 
 /**
