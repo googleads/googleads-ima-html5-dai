@@ -30,17 +30,17 @@ var hls = new Hls();
 // Video element
 var videoElement;
 
-// Click element
-var clickElement;
+// Ad UI element
+var adUiElement;
 
 /**
  * Initializes the video player.
  */
 function initPlayer() {
   videoElement = document.getElementById('video');
-  clickElement = document.getElementById('click');
-  streamManager = new google.ima.dai.api.StreamManager(videoElement);
-  streamManager.setClickElement(clickElement);
+  adUiElement = document.getElementById('adUi');
+  streamManager =
+      new google.ima.dai.api.StreamManager(videoElement, adUiElement);
   streamManager.addEventListener(
     [google.ima.dai.api.StreamEvent.Type.LOADED,
      google.ima.dai.api.StreamEvent.Type.ERROR,
@@ -163,12 +163,12 @@ function onStreamEvent(e) {
     case google.ima.dai.api.StreamEvent.Type.AD_BREAK_STARTED:
       console.log('Ad Break Started');
       videoElement.controls = false;
-      clickElement.style.display = 'block';
+      adUiElement.style.display = 'block';
       break;
     case google.ima.dai.api.StreamEvent.Type.AD_BREAK_ENDED:
       console.log('Ad Break Ended');
       videoElement.controls = true;
-      clickElement.style.display = 'none';
+      adUiElement.style.display = 'none';
       break;
     default:
       break;
