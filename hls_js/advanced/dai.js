@@ -79,6 +79,9 @@ var bookmarkTime;
 // Whether we are currently playing a live stream or a VOD stream
 var isLiveStream;
 
+// Whether the stream is currently in an ad break.
+var isAdBreak;
+
 /**
  * Initializes the page.
  */
@@ -135,6 +138,8 @@ function initPlayer() {
   bookmarkTime = parseInt(queryParams['bookmark']) || null;
 
   videoElement.addEventListener('seeked', onSeekEnd);
+  videoElement.addEventListener('pause', onStreamPause);
+  videoElement.addEventListener('play', onStreamPlay);
 
   streamManager = new google.ima.dai.api.StreamManager(videoElement, adUiDiv);
   streamManager.addEventListener(
@@ -298,6 +303,7 @@ function onAdProgress(e) {
  */
 function onAdBreakStarted(e) {
   console.log('Ad Break Started');
+  isAdBreak = true;
   videoElement.controls = false;
   adUiDiv.style.display = 'block';
   // Fixes an issue where slow-seeking into an ad causes the player to get stuck
@@ -311,6 +317,7 @@ function onAdBreakStarted(e) {
  */
 function onAdBreakEnded(e) {
   console.log('Ad Break Ended');
+  isAdBreak = false;
   videoElement.controls = true;
   adUiDiv.style.display = 'none';
   if (snapForwardTime && snapForwardTime > videoElement.currentTime) {
@@ -376,5 +383,27 @@ function onSeekEnd() {
     isSnapback = true;
     snapForwardTime = currentTime;
     videoElement.currentTime = previousCuePoint.start;
+  }
+}
+
+/**
+ * Shows the video controls so users can resume after stream is paused.
+ */
+function onStreamPause() {
+  console.log('paused');
+  if (isAdBreak) {
+    videoElement.controls = true;
+    adUiDiv.style.display = 'none';
+  }
+}
+
+/**
+ * Hides the video controls if resumed during an ad break.
+ */
+function onStreamPlay() {
+  console.log('played');
+  if (isAdBreak) {
+    videoElement.controls = false;
+    adUiDiv.style.display = 'block';
   }
 }
