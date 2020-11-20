@@ -4,11 +4,11 @@ const BACKUP_STREAM =
     'master.m3u8';
 
 // Live stream asset key.
-const TEST_ASSET_KEY = "sN_IYUG8STe1ZzhIIE_ksA";
+const TEST_ASSET_KEY = 'sN_IYUG8STe1ZzhIIE_ksA';
 
 // VOD content source and video IDs.
 const TEST_CONTENT_SOURCE_ID = '2528370';
-const TEST_VIDEO_ID = "tears-of-steel";
+const TEST_VIDEO_ID = 'tears-of-steel';
 
 // StreamManager which will be used to request ad-enabled streams.
 let streamManager;
@@ -45,7 +45,7 @@ function initPlayer() {
 
   requestVODStream(TEST_CONTENT_SOURCE_ID, TEST_VIDEO_ID, null);
   // Uncomment line below and comment one above to request a LIVE stream.
-  //requestLiveStream(TEST_ASSET_KEY, null);
+  // requestLiveStream(TEST_ASSET_KEY, null);
 }
 
 /**

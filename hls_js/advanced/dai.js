@@ -4,7 +4,7 @@ var BACKUP_STREAM =
     'master.m3u8';
 
 // Live stream asset key.
-var TEST_ASSET_KEY = "sN_IYUG8STe1ZzhIIE_ksA";
+var TEST_ASSET_KEY = 'sN_IYUG8STe1ZzhIIE_ksA';
 
 // VOD content source and video IDs.
 var TEST_CONTENT_SOURCE_ID = '2528370';
@@ -120,7 +120,6 @@ function initUI() {
     cmsIdInput.value = TEST_CONTENT_SOURCE_ID;
     videoIdInput.value = TEST_VIDEO_ID;
   });
-
 }
 
 /**
@@ -143,29 +142,19 @@ function initPlayer() {
 
   streamManager = new google.ima.dai.api.StreamManager(videoElement, adUiDiv);
   streamManager.addEventListener(
-      google.ima.dai.api.StreamEvent.Type.LOADED,
-      onStreamLoaded,
+      google.ima.dai.api.StreamEvent.Type.LOADED, onStreamLoaded, false);
+  streamManager.addEventListener(
+      google.ima.dai.api.StreamEvent.Type.ERROR, onStreamError, false);
+  streamManager.addEventListener(
+      google.ima.dai.api.StreamEvent.Type.AD_PROGRESS, onAdProgress, false);
+  streamManager.addEventListener(
+      google.ima.dai.api.StreamEvent.Type.AD_BREAK_STARTED, onAdBreakStarted,
       false);
   streamManager.addEventListener(
-      google.ima.dai.api.StreamEvent.Type.ERROR,
-      onStreamError,
+      google.ima.dai.api.StreamEvent.Type.AD_BREAK_ENDED, onAdBreakEnded,
       false);
   streamManager.addEventListener(
-      google.ima.dai.api.StreamEvent.Type.AD_PROGRESS,
-      onAdProgress,
-      false);
-  streamManager.addEventListener(
-      google.ima.dai.api.StreamEvent.Type.AD_BREAK_STARTED,
-      onAdBreakStarted,
-      false);
-  streamManager.addEventListener(
-      google.ima.dai.api.StreamEvent.Type.AD_BREAK_ENDED,
-      onAdBreakEnded,
-      false);
-  streamManager.addEventListener(
-      google.ima.dai.api.StreamEvent.Type.STARTED,
-      onAdStarted,
-      false);
+      google.ima.dai.api.StreamEvent.Type.STARTED, onAdStarted, false);
 
   hls.on(Hls.Events.FRAG_PARSING_METADATA, function(event, data) {
     if (streamManager && data) {
@@ -205,7 +194,7 @@ function onVODRadioClick() {
 function getQueryParams() {
   var returnVal = {};
   var pairs = location.search.substring(1).split('&');
-  for (var i=0; i<pairs.length; i++) {
+  for (var i = 0; i < pairs.length; i++) {
     var pair = pairs[i].split('=');
     returnVal[pair[0]] = decodeURIComponent(pair[1]);
   }
@@ -230,7 +219,8 @@ function onPlayButtonClick() {
 function onBookmarkButtonClick() {
   // Handles player not ready or current time = 0
   if (!videoElement.currentTime) {
-    alert('Error: could not get current time of video element, or current time is 0');
+    alert(
+        'Error: could not get current time of video element, or current time is 0');
     return;
   }
   if (isLiveStream) {
@@ -332,7 +322,7 @@ function onAdBreakEnded(e) {
  */
 function onAdStarted(e) {
   var companionAds = e.getAd().getCompanionAds();
-  for (var i=0; i<companionAds.length; i++) {
+  for (var i = 0; i < companionAds.length; i++) {
     var companionAd = companionAds[i];
     if (companionAd.getWidth() == 728 && companionAd.getHeight() == 90) {
       companionDiv.innerHTML = companionAd.getContent();
@@ -357,7 +347,9 @@ function loadUrl(url) {
       isSnapback = true;
     }
     hls.startLoad(startTime);
-    videoElement.addEventListener('loadedmetadata', () => { videoElement.play(); });
+    videoElement.addEventListener('loadedmetadata', () => {
+      videoElement.play();
+    });
   });
   hls.loadSource(url);
   hls.attachMedia(videoElement);
@@ -369,7 +361,9 @@ function loadUrl(url) {
  * played.
  */
 function onSeekEnd() {
-  if (isLiveStream) { return; }
+  if (isLiveStream) {
+    return;
+  }
   if (isSnapback) {
     isSnapback = false;
     return;
@@ -378,8 +372,9 @@ function onSeekEnd() {
   var previousCuePoint =
       streamManager.previousCuePointForStreamTime(currentTime);
   if (previousCuePoint && !previousCuePoint.played) {
-    console.log('Seeking back to ' + previousCuePoint.start +
-        ' and will return to ' + currentTime);
+    console.log(
+        'Seeking back to ' + previousCuePoint.start + ' and will return to ' +
+        currentTime);
     isSnapback = true;
     snapForwardTime = currentTime;
     videoElement.currentTime = previousCuePoint.start;
