@@ -1,4 +1,6 @@
 // This stream will be played if ad-enabled playback fails.
+goog.module('google3.personalization.zipit.frontend.javascript.external-javascript.ads.interactivemedia.sdk.dai.sample.h5.native.simple.dai');
+
 const BACKUP_STREAM =
     'http://storage.googleapis.com/testtopbox-public/video_content/bbb/' +
     'master.m3u8';
