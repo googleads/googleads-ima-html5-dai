@@ -1,97 +1,101 @@
-// copybara:strip_begin
-goog.module('google3.javascript.ads.interactivemedia.sdk.dai.sample.h5.hls_js.advanced.dai');
-// copybara:strip_end
 // This stream will be played if ad-enabled playback fails.
-
-var BACKUP_STREAM =
+const BACKUP_STREAM =
     'http://storage.googleapis.com/testtopbox-public/video_content/bbb/' +
     'master.m3u8';
 
 // Live stream asset key.
-var TEST_ASSET_KEY = 'sN_IYUG8STe1ZzhIIE_ksA';
+const TEST_ASSET_KEY = 'PSzZMzAkSXCmlJOWDmRj8Q';
 
 // VOD content source and video IDs.
-var TEST_CONTENT_SOURCE_ID = '2528370';
-var TEST_VIDEO_ID = 'tears-of-steel';
+const TEST_CONTENT_SOURCE_ID = '2474148';
+const TEST_VIDEO_ID = 'bbb-clear';
 
 // StreamManager which will be used to request ad-enabled streams.
-var streamManager;
-
-// hls.js video player.
-var hls = new Hls({autoStartLoad: false});
+let streamManager;
 
 // Radio button for Live Stream.
-var liveRadio;
+let liveRadio;
 
 // Radio button for VOD stream.
-var vodRadio;
+let vodRadio;
 
 // Live sample fake link.
-var liveFakeLink;
+let liveFakeLink;
 
 // VOD sample fake link.
-var vodFakeLink;
+let vodFakeLink;
 
 // Wrapper for live input fields.
-var liveInputs;
+let liveInputs;
 
 // Wrapper for VOD input fields.
-var vodInputs;
+let vodInputs;
 
 // Text box with asset key.
-var assetKeyInput;
+let assetKeyInput;
 
 // Text box with live API key.
-var liveAPIKeyInput;
+let liveAPIKeyInput;
 
 // Text box with CMS ID.
-var cmsIdInput;
+let cmsIdInput;
 
 // Text box with Video ID.
-var videoIdInput;
+let videoIdInput;
 
 // Text box with VOD API key.
-var vodAPIKeyInput;
+let vodAPIKeyInput;
 
 // Video element.
-var videoElement;
+let videoElement;
 
 // Play button.
-var playButton;
-
-// Button to save bookmark to URL.
-var bookmarkButton;
+let playButton;
 
 // Companion ad div.
-var companionDiv;
+let companionDiv;
 
 // Div showing current ad progress.
-var progressDiv;
+let progressDiv;
 
 // Ad UI div.
-var adUiDiv;
+let adUiDiv;
 
 // Flag tracking if we are currently in snapback mode or not.
-var isSnapback;
+let isInSnapbackMode;
 
 // Time to seek to after an ad if that ad was played as the result of snapback.
-var snapForwardTime;
-
-// Content time for stream start if it's bookmarked.
-var bookmarkTime;
+let snapForwardTime;
 
 // Whether we are currently playing a live stream or a VOD stream
-var isLiveStream;
+let isLiveStream;
 
 // Whether the stream is currently in an ad break.
-var isAdBreak;
+let isAdBreak;
+
+// Whether the stream has been started.
+let streamStarted;
+
+// Whether the stream is currently playing.
+let streamPlaying;
 
 /**
  * Initializes the page.
  */
 function initPage() {
   initUI();
-  initPlayer();
+
+  // Install built-in polyfills to patch browser incompatibilities.
+  shaka.polyfill.installAll();
+
+  // Check to see if the browser supports the basic APIs Shaka needs.
+  if (shaka.Player.isBrowserSupported()) {
+    // Everything looks good!
+    initPlayer();
+  } else {
+    // This browser does not have the minimum set of APIs we need.
+    console.error('Browser not supported!');
+  }
 }
 
 /**
@@ -132,13 +136,9 @@ function initUI() {
 function initPlayer() {
   videoElement = document.getElementById('content');
   playButton = document.getElementById('play-button');
-  bookmarkButton = document.getElementById('bookmark-button');
   adUiDiv = document.getElementById('ad-ui');
   progressDiv = document.getElementById('progress');
   companionDiv = document.getElementById('companion');
-
-  var queryParams = getQueryParams();
-  bookmarkTime = parseInt(queryParams['bookmark']) || null;
 
   videoElement.addEventListener('seeked', onSeekEnd);
   videoElement.addEventListener('pause', onStreamPause);
@@ -160,18 +160,20 @@ function initPlayer() {
   streamManager.addEventListener(
       google.ima.dai.api.StreamEvent.Type.STARTED, onAdStarted, false);
 
-  hls.on(Hls.Events.FRAG_PARSING_METADATA, function(event, data) {
-    if (streamManager && data) {
-      // For each ID3 tag in our metadata, we pass in the type - ID3, the
-      // tag data (a byte array), and the presentation timestamp (PTS).
-      data.samples.forEach(function(sample) {
-        streamManager.processMetadata('ID3', sample.data, sample.pts);
-      });
-    }
-  });
+  // Create a Player instance.
+  shaka = new shaka.Player(videoElement);
+
+  shaka.addEventListener('emsg', (e) => onEmsgEvent(e));
+  shaka.addEventListener(
+      'timelineregionenter', (e) => onTimelineRegionEnterEvent(e));
+
+  // Attach player to the window to make it easy to access in the JS console.
+  window.player = shaka;
+
+  // Listen for error events.
+  shaka.addEventListener('error', onStreamError);
 
   playButton.addEventListener('click', onPlayButtonClick);
-  bookmarkButton.addEventListener('click', onBookmarkButtonClick);
 }
 
 /**
@@ -192,47 +194,37 @@ function onVODRadioClick() {
 
 /**
  * Returns a dictionary of key-value pairs from a GET query string.
- * @return{Object} Key-value dictionary for keys and values in provided query
+ * @return{!Object} Key-value dictionary for keys and values in provided query
  *     string.
  */
 function getQueryParams() {
-  var returnVal = {};
-  var pairs = location.search.substring(1).split('&');
-  for (var i = 0; i < pairs.length; i++) {
-    var pair = pairs[i].split('=');
+  const returnVal = {};
+  const pairs = location.search.substring(1).split('&');
+  for (let i = 0; i < pairs.length; i++) {
+    const pair = pairs[i].split('=');
     returnVal[pair[0]] = decodeURIComponent(pair[1]);
   }
   return returnVal;
 }
 
 /**
- * Handles play button clicks by requsting a stream. Also removes itself so we
+ * Handles play button clicks by requesting a stream. Also removes itself so we
  * don't request more streams on subsequent clicks.
  */
 function onPlayButtonClick() {
-  if (liveRadio.checked) {
-    requestLiveStream();
+  if (streamStarted) {
+    if (streamPlaying) {
+      videoElement.pause();
+    } else {
+      videoElement.play();
+    }
   } else {
-    requestVODStream();
+    if (liveRadio.checked) {
+      requestLiveStream();
+    } else {
+      requestVODStream();
+    }
   }
-}
-
-/**
- * Gets the current bookmark time and saves it to a URL param.
- */
-function onBookmarkButtonClick() {
-  // Handles player not ready or current time = 0
-  if (!videoElement.currentTime) {
-    alert(
-        'Error: could not get current time of video element, or current time is 0');
-    return;
-  }
-  if (isLiveStream) {
-    alert('Error: this functionality only works for VOD streams');
-  }
-  var bookmarkTime = Math.floor(
-      streamManager.contentTimeForStreamTime(videoElement.currentTime));
-  history.pushState(null, null, 'dai.html?bookmark=' + bookmarkTime);
 }
 
 /**
@@ -240,7 +232,7 @@ function onBookmarkButtonClick() {
  */
 function requestLiveStream() {
   isLiveStream = true;
-  var streamRequest = new google.ima.dai.api.LiveStreamRequest();
+  const streamRequest = new google.ima.dai.api.LiveStreamRequest();
   streamRequest.assetKey = assetKeyInput.value;
   streamRequest.apiKey = liveAPIKeyInput.value || '';
   streamManager.requestStream(streamRequest);
@@ -251,16 +243,17 @@ function requestLiveStream() {
  */
 function requestVODStream() {
   isLiveStream = false;
-  var streamRequest = new google.ima.dai.api.VODStreamRequest();
+  const streamRequest = new google.ima.dai.api.VODStreamRequest();
   streamRequest.contentSourceId = cmsIdInput.value;
   streamRequest.videoId = videoIdInput.value;
   streamRequest.apiKey = vodAPIKeyInput.value;
+  streamRequest.format = 'dash';
   streamManager.requestStream(streamRequest);
 }
 
 /**
  * Loads the stream.
- * @param{StreamEvent} e StreamEvent fired when stream is loaded.
+ * @param{!StreamEvent} e StreamEvent fired when stream is loaded.
  */
 function onStreamLoaded(e) {
   console.log('Stream loaded');
@@ -269,7 +262,7 @@ function onStreamLoaded(e) {
 
 /**
  * Handles stream errors. Plays backup content.
- * @param{StreamEvent} e StreamEvent fired on stream error.
+ * @param{!StreamEvent} e StreamEvent fired on stream error.
  */
 function onStreamError(e) {
   console.log('Error loading stream, playing backup stream.' + e);
@@ -278,22 +271,22 @@ function onStreamError(e) {
 
 /**
  * Updates the progress div.
- * @param{StreamEvent} e StreamEvent fired when ad progresses.
+ * @param{!StreamEvent} e StreamEvent fired when ad progresses.
  */
 function onAdProgress(e) {
-  var adProgressData = e.getStreamData().adProgressData;
-  var currentAdNum = adProgressData.adPosition;
-  var totalAds = adProgressData.totalAds;
-  var currentTime = adProgressData.currentTime;
-  var duration = adProgressData.duration;
-  var remainingTime = Math.floor(duration - currentTime);
-  progressDiv.innerHTML =
+  const adProgressData = e.getStreamData().adProgressData;
+  const currentAdNum = adProgressData.adPosition;
+  const totalAds = adProgressData.totalAds;
+  const currentTime = adProgressData.currentTime;
+  const duration = adProgressData.duration;
+  const remainingTime = Math.floor(duration - currentTime);
+  progressDiv.textContent =
       'Ad (' + currentAdNum + ' of ' + totalAds + ') ' + remainingTime + 's';
 }
 
 /**
  * Handles ad break started.
- * @param{StreamEvent} e StreamEvent fired for ad break start.
+ * @param{!StreamEvent} e StreamEvent fired for ad break start.
  */
 function onAdBreakStarted(e) {
   console.log('Ad Break Started');
@@ -307,12 +300,14 @@ function onAdBreakStarted(e) {
 
 /**
  * Handles ad break ended.
- * @param{StreamEvent} e Stream event fired for ad break end.
+ * @param{!StreamEvent} e Stream event fired for ad break end.
  */
 function onAdBreakEnded(e) {
   console.log('Ad Break Ended');
   isAdBreak = false;
-  videoElement.controls = true;
+  if (!isLiveStream) {
+    videoElement.controls = true;
+  }
   adUiDiv.style.display = 'none';
   if (snapForwardTime && snapForwardTime > videoElement.currentTime) {
     videoElement.currentTime = snapForwardTime;
@@ -322,42 +317,38 @@ function onAdBreakEnded(e) {
 }
 
 /**
- *  Handles ad started and displays companion ad, if any.
+ * Handles ad started and displays companion ad, if any.
+ * @param{!StreamEvent} e The STARTED stream event.
  */
 function onAdStarted(e) {
-  var companionAds = e.getAd().getCompanionAds();
-  for (var i = 0; i < companionAds.length; i++) {
-    var companionAd = companionAds[i];
+  const companionAds = e.getAd().getCompanionAds();
+  for (let i = 0; i < companionAds.length; i++) {
+    const companionAd = companionAds[i];
     if (companionAd.getWidth() == 728 && companionAd.getHeight() == 90) {
-      companionDiv.innerHTML = companionAd.getContent();
+      companionDiv.textContent = companionAd.getContent();
     }
   }
 }
 
 /**
  * Loads and plays a Url.
- * @param  {string} url
+ * @param{string} url
  */
 function loadUrl(url) {
   console.log('Loading:' + url);
-  hls.on(Hls.Events.MANIFEST_PARSED, () => {
-    console.log('Video Play');
-    var startTime = 0;
-    if (bookmarkTime) {
-      var startTime = streamManager.streamTimeForContentTime(bookmarkTime);
-      // Seeking on load will trigger the onSeekEnd event, so treat this seek as
-      // if it's snapback. Without this, resuming at a bookmark will kick you
-      // back to the ad before the bookmark.
-      isSnapback = true;
-    }
-    hls.startLoad(startTime);
-    videoElement.addEventListener('loadedmetadata', () => {
-      videoElement.play();
-    });
-  });
-  hls.loadSource(url);
-  hls.attachMedia(videoElement);
-  videoElement.controls = true;
+
+  shaka.load(url)
+      .then(function() {
+        // This runs if the asynchronous load is successful.
+        if (isLiveStream) {
+          videoElement.controls = false;
+        }
+        document.getElementById('play-button').textContent = 'Play stream';
+        streamStarted = true;
+      })
+      .catch(function(error) {
+        console.error('Error loading stream:', error);
+      });
 }
 
 /**
@@ -368,18 +359,18 @@ function onSeekEnd() {
   if (isLiveStream) {
     return;
   }
-  if (isSnapback) {
-    isSnapback = false;
+  if (isInSnapbackMode) {
+    isInSnapbackMode = false;
     return;
   }
-  var currentTime = videoElement.currentTime;
-  var previousCuePoint =
+  const currentTime = videoElement.currentTime;
+  const previousCuePoint =
       streamManager.previousCuePointForStreamTime(currentTime);
   if (previousCuePoint && !previousCuePoint.played) {
     console.log(
         'Seeking back to ' + previousCuePoint.start + ' and will return to ' +
         currentTime);
-    isSnapback = true;
+    isInSnapbackMode = true;
     snapForwardTime = currentTime;
     videoElement.currentTime = previousCuePoint.start;
   }
@@ -389,20 +380,52 @@ function onSeekEnd() {
  * Shows the video controls so users can resume after stream is paused.
  */
 function onStreamPause() {
-  console.log('paused');
   if (isAdBreak) {
-    videoElement.controls = true;
+    if (!isLiveStream) {
+      videoElement.controls = true;
+    }
     adUiDiv.style.display = 'none';
   }
+  streamPlaying = false;
+  playButton.textContent = 'Play stream';
 }
 
 /**
  * Hides the video controls if resumed during an ad break.
  */
 function onStreamPlay() {
-  console.log('played');
   if (isAdBreak) {
     videoElement.controls = false;
     adUiDiv.style.display = 'block';
   }
+  streamPlaying = true;
+  playButton.textContent = 'Pause stream';
+}
+
+/**
+ * For DASH emsg events.
+ * @param{!shaka.extern.EmsgInfo} event which contains information about an EMSG
+ * MP4 box.
+ */
+function onEmsgEvent(event) {
+  handleEventMessage(event.detail.messageData);
+}
+
+/**
+ * For DASH timelineregionenter events.
+ * @param{!shaka.extern.TimelineRegionInfo} event which contains information
+ * about a region of the timeline that will cause an event to be raised when the
+ * playhead enters or exits it. In DASH this is the EventStream element.
+ */
+function onTimelineRegionEnterEvent(event) {
+  handleEventMessage(
+      event.detail.eventElement.attributes.messageData.nodeValue);
+}
+
+/**
+ * For handling timed metadata events.
+ * @param{!Uint8Array} messageData is the body of the metadata message.
+ */
+function handleEventMessage(messageData) {
+  streamManager.onTimedMetadata({'TXXX': messageData});
 }

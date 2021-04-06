@@ -1,13 +1,13 @@
 <html>
 <head>
-  <script src="https://cdn.jsdelivr.net/hls.js/latest/hls.min.js"></script>
-  <script type="text/javascript" src="https://imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script>
+  <script src="shaka-player/dist/shaka-player.compiled.js"></script>
+  <script src="https://imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script>
   <script src="dai.js"></script>
-  <link rel="stylesheet" href="dai.css" type="text/css">
+  <link rel="stylesheet" href="dai.css">
 </head>
 <body onLoad="initPage()">
   <div id="container">
-    <header>IMA SDK DAI Demo (HLS.JS)</header>
+    <header>IMA SDK DAI Demo (Shaka player) for DASH streams</header>
 
     <div id="input-wrapper">
       <strong>Stream type:</strong>
@@ -41,11 +41,9 @@
     </div>
     <div id="progress"></div>
     <div id="buttons">
-      <button id="play-button" class="button">Play</button>
-      <button id="bookmark-button" class="button">Save Bookmark to URL</button>
+      <button id="play-button" class="button">Load stream</button>
     </div>
     <div id="companion"></div>
   </div>
 </body>
 </html>
-
