@@ -1,6 +1,3 @@
-// copybara:strip_begin
-goog.module('google3.javascript.ads.interactivemedia.sdk.dai.sample.h5.dai_preroll.dai');
-// copybara:strip_end
 // This sample plays a client-side preroll followed by a DAI live stream. It is
 // used to test the functionality of both the client side and the DAI SDK on
 // the same page.

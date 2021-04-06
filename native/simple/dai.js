@@ -1,6 +1,3 @@
-// copybara:strip_begin
-goog.module('google3.javascript.ads.interactivemedia.sdk.dai.sample.h5.native.simple.dai');
-// copybara:strip_end
 // This stream will be played if ad-enabled playback fails.
 const BACKUP_STREAM =
     'http://storage.googleapis.com/testtopbox-public/video_content/bbb/' +
