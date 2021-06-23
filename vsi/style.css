@@ -1,0 +1,249 @@
+body {
+  font: 400 16px/24px Roboto,Noto Sans,Noto Sans JP,Noto Sans KR,Noto Naskh Arabic,Noto Sans Thai,Noto Sans Hebrew,Noto Sans Bengali,sans-serif;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  background-color: #dadce0;
+}
+
+h1 {
+  font-family: "Google Sans", "Noto Sans", "Noto Sans JP", "Noto Sans KR", "Noto Naskh Arabic", "Noto Sans Thai", "Noto Sans Hebrew", "Noto Sans Bengali", sans-serif;
+  font-size: 32px;
+  font-weight: 400;
+}
+
+h3 {
+  font-family: "Google Sans", "Noto Sans", "Noto Sans JP", "Noto Sans KR", "Noto Naskh Arabic", "Noto Sans Thai", "Noto Sans Hebrew", "Noto Sans Bengali", sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.intro-text {
+  max-width: 850px;
+}
+
+.note {
+  background: #e1f5fe;
+  color: #01579b;
+  font-size: 14px;
+  margin: 16px -40px;
+  padding: 16px 40px;
+}
+
+.note > span {
+  position: absolute;
+  font-family: "Material Icons";
+  font-size: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.note > p {
+  margin: 0 0 0 32px;
+}
+
+#top-logo-bar {
+  height: 48px;
+  width: 100%;
+  background-color: white;
+  padding: 0 24px;
+}
+
+#top-logo-bar > p {
+  margin: 0;
+  padding-top: 10px;
+  font-size: 22px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+#top-logo-bar > p > a{
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+#top-link-bar {
+  height: 48px;
+  width: 100%;
+  background-color: #1e8e3e;
+  box-shadow: 0 2px 2px 2px #c2c2c2;
+}
+
+#top-link-bar > a {
+  text-decoration: none;
+  padding: 12px 16px;
+  display: inline-block;
+  color: white;
+  font-size: 14px;
+}
+
+#top-link-bar > a:hover{
+  color: #ffffffb3;
+}
+
+#main-container {
+  background-color: white;
+  margin: 24px;
+  padding: 40px;
+  border-radius: 3px;
+  box-shadow: 0 0 1px 2px #c2c2c2;
+}
+
+.main-intro p {
+  width: 640px; /* same as video player */
+}
+
+.vast-controls {
+  max-width: 640px;
+  width: 100%;
+  margin-top: 1.5em;
+}
+
+.button-blue {
+  background: #1a73e8;
+  border: 0;
+  color: #fff;
+  line-height: 36px;
+  border-radius: 5px;
+  padding: 0 24px;
+  margin: 0 0 14px;
+  font-family: "Google Sans", "Noto Sans", "Noto Sans JP", "Noto Sans KR", "Noto Naskh Arabic", "Noto Sans Thai", "Noto Sans Hebrew", "Noto Sans Bengali", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.play-button,
+.volume-button {
+  cursor: pointer;
+}
+
+input[type="text"] {
+  width: 250px;
+}
+
+input[type="radio"] {
+  margin-left: 20px;
+}
+
+.radio-group {
+  display: inline-block;
+}
+
+.input-group {
+  margin-top: 10px !important;
+}
+
+.link {
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.input-label-reset {
+  color: #212121;
+  display: inline;
+  font-size: 16px;
+}
+
+#vod-inputs {
+  display: none;
+}
+
+#stream-formats {
+  margin-top: 10px;
+}
+
+#container {
+  max-width: 900px;
+  width: 100%;
+}
+
+#video-player {
+  position: relative;
+  background-color: #000;
+  border-radius: 5px;
+  box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.95);
+  border: 2px #ccc solid;
+  max-width: 640px;
+  width: 100%;
+  height: 360px;
+  margin-top: 20px;
+}
+
+.content {
+  overflow: hidden;
+  background-color: black;
+  width: 100%;
+  height: 100%;
+}
+
+#dash-content {
+  display: none;
+}
+
+#content {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  max-width: 640px;
+  width: 100%;
+  height: 360px;
+}
+
+#input-wrapper {
+  vertical-align: top;
+}
+
+#input-wrapper, #buttons {
+  max-width: 800px;
+  width: 100%;
+  height: auto;
+  padding-top: 10px;
+}
+
+#ad-ui {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+#play-button {
+  width: 150px;
+}
+
+#bookmark-button {
+  width: 300px;
+}
+
+#bookmark-info {
+  max-width: 640px;
+  width: 100%;
+}
+
+#bookmark-wrapper {
+  display: none;
+  margin-top: 1em;
+}
+
+#bookmark-link-text {
+  height: 3em;
+  margin-top: 1em;
+  max-width: 640px;
+  width: 100%;
+}
+
+#companion {
+  max-width: 728px;
+  width: 100%;
+  height: 90px;
+  margin-top: 10px;
+}
+
+#console {
+  height: 200px;
+  max-width: 630px;
+  width: 100%;
+  padding: 5px;
+  border: 1px #ccc solid;
+  overflow-y: scroll;
+  margin-top: 10px;
+}
