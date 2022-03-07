@@ -5,13 +5,13 @@ This project hosts samples for the
 
 ### Samples breakdown
 
-[HLS.js simple](https://github.com/googleads/googleads-ima-html5-dai/tree/master/hls_js/simple) -
+[HLS.js simple](https://github.com/googleads/googleads-ima-html5-dai/tree/main/hls_js/simple) -
 Simple example using HLS.js.
 
-[HLS.js advanced](https://github.com/googleads/googleads-ima-html5-dai/tree/master/hls_js/advanced) -
+[HLS.js advanced](https://github.com/googleads/googleads-ima-html5-dai/tree/main/hls_js/advanced) -
 Advanced example using HLS.js.
 
-[DAI Pre-roll](https://github.com/googleads/googleads-ima-html5-dai/tree/master/dai_preroll) -
+[DAI Pre-roll](https://github.com/googleads/googleads-ima-html5-dai/tree/main/dai_preroll) -
 Demonstrates using the IMA client-side SDK to request a pre-roll ad, then the
 IMA DAI SDK to play a DAI stream with mid-rolls.
 
