@@ -1,27 +1,27 @@
 // This stream will be played if ad-enabled playback fails.
 
-var BACKUP_STREAM =
+const BACKUP_STREAM =
     'http://storage.googleapis.com/testtopbox-public/video_content/bbb/' +
     'master.m3u8';
 
 // Live stream asset key.
-var TEST_ASSET_KEY = 'sN_IYUG8STe1ZzhIIE_ksA';
+// const TEST_ASSET_KEY = 'c-rArva4ShKVIAkNfy6HUQ';
 
 // VOD content source and video IDs.
-var TEST_CONTENT_SOURCE_ID = '2528370';
-var TEST_VIDEO_ID = 'tears-of-steel';
+const TEST_CONTENT_SOURCE_ID = '2548831';
+const TEST_VIDEO_ID = 'tears-of-steel';
 
 // StreamManager which will be used to request ad-enabled streams.
-var streamManager;
+let streamManager;
 
 // hls.js video player
-var hls = new Hls();
+const hls = new Hls();
 
 // Video element
-var videoElement;
+let videoElement;
 
 // Ad UI element
-var adUiElement;
+let adUiElement;
 
 /**
  * Initializes the video player.
@@ -66,11 +66,11 @@ function initPlayer() {
 
 /**
  * Requests a Live stream with ads.
- * @param  {string} assetKey
- * @param  {?string} apiKey
+ * @param {string} assetKey
+ * @param {?string} apiKey
  */
 function requestLiveStream(assetKey, apiKey) {
-  var streamRequest = new google.ima.dai.api.LiveStreamRequest();
+  const streamRequest = new google.ima.dai.api.LiveStreamRequest();
   streamRequest.assetKey = assetKey;
   streamRequest.apiKey = apiKey || '';
   streamManager.requestStream(streamRequest);
@@ -78,12 +78,12 @@ function requestLiveStream(assetKey, apiKey) {
 
 /**
  * Requests a VOD stream with ads.
- * @param  {string} cmsId
- * @param  {string} videoId
- * @param  {?string} apiKey
+ * @param {string} cmsId
+ * @param {string} videoId
+ * @param {?string} apiKey
  */
 function requestVODStream(cmsId, videoId, apiKey) {
-  var streamRequest = new google.ima.dai.api.VODStreamRequest();
+  const streamRequest = new google.ima.dai.api.VODStreamRequest();
   streamRequest.contentSourceId = cmsId;
   streamRequest.videoId = videoId;
   streamRequest.apiKey = apiKey;
@@ -92,7 +92,7 @@ function requestVODStream(cmsId, videoId, apiKey) {
 
 /**
  * Responds to a stream event.
- * @param  {StreamEvent} e
+ * @param {!google.ima.dai.api.StreamEvent} e
  */
 function onStreamEvent(e) {
   switch (e.type) {
@@ -121,7 +121,7 @@ function onStreamEvent(e) {
 
 /**
  * Loads and plays a Url.
- * @param  {string} url
+ * @param {string} url
  */
 function loadUrl(url) {
   console.log('Loading:' + url);

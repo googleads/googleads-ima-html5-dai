@@ -4,38 +4,38 @@
 
 // This stream will be played if ad-enabled playback fails.
 
-var BACKUP_STREAM =
+const BACKUP_STREAM =
     'http://storage.googleapis.com/testtopbox-public/video_content/bbb/' +
     'master.m3u8';
 
 // Live stream asset key.
-var TEST_ASSET_KEY = 'sN_IYUG8STe1ZzhIIE_ksA';
+const TEST_ASSET_KEY = 'c-rArva4ShKVIAkNfy6HUQ';
 
 // Preroll ad tag
-var TEST_AD_TAG = 'https://pubads.g.doubleclick.net/gampad/ads?' +
-    'sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&' +
-    'impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&' +
-    'cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=';
+const TEST_AD_TAG = 'https://pubads.g.doubleclick.net/gampad/ads?' +
+    'iu=/21775744923/external/single_ad_samples&sz=640x480&' +
+    'cust_params=sample_ct%3Dlinear&ciu_szs=300x250%2C728x90&gdfp_req=1&' +
+    'output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=';
 
 // StreamManager which will be used to request ad-enabled streams.
-var streamManager;
+let streamManager;
 
 // Used for playback of the preroll ad using the client side SDK.
-var adsLoader;
-var adDisplayContainer;
-var adsManager;
+let adsLoader;
+let adDisplayContainer;
+let adsManager;
 
 // hls.js video player
-var hls = new Hls();
+const hls = new Hls();
 
 // Video element
-var videoElement;
+let videoElement;
 
 // Ad UI element
-var adUiElement;
+let adUiElement;
 
 // Whether the stream is currently in an ad break.
-var isAdBreak;
+let isAdBreak;
 
 /**
  * Initializes the video player.
@@ -93,7 +93,7 @@ function initPlayer() {
 
 /**
  * Handles an ad error (client side ads).
- * @param  {AdErrorEvent} adErrorEvent
+ * @param {!google.ima.dai.api.AdErrorEvent} adErrorEvent
  */
 function onAdError(adErrorEvent) {
   console.log(adErrorEvent.getError());
@@ -104,7 +104,7 @@ function onAdError(adErrorEvent) {
 
 /**
  * Handles the adsManagerLoaded event (client side ads).
- * @param  {AdsManagerLoadedEvent} adsManagerLoadedEvent
+ * @param {!google.ima.dai.api.AdsManagerLoadedEvent} adsManagerLoadedEvent
  */
 function onAdsManagerLoaded(adsManagerLoadedEvent) {
   adsManager = adsManagerLoadedEvent.getAdsManager(videoElement);
@@ -128,10 +128,10 @@ function onAdsManagerLoaded(adsManagerLoadedEvent) {
 
 /**
  * Requests a preroll ad using the client side SDK.
- * @param  {string} adTagUrl
+ * @param {string} adTagUrl
  */
 function requestPreroll(adTagUrl) {
-  var adsRequest = new google.ima.AdsRequest();
+  const adsRequest = new google.ima.AdsRequest();
   adsRequest.adTagUrl = adTagUrl;
   adsRequest.linearAdSlotWidth = 640;
   adsRequest.linearAdSlotHeight = 400;
@@ -140,11 +140,11 @@ function requestPreroll(adTagUrl) {
 
 /**
  * Requests a Live stream with ads.
- * @param  {string} assetKey
- * @param  {?string} apiKey
+ * @param {string} assetKey
+ * @param {?string} apiKey
  */
 function requestLiveStream(assetKey, apiKey) {
-  var streamRequest = new google.ima.dai.api.LiveStreamRequest();
+  const streamRequest = new google.ima.dai.api.LiveStreamRequest();
   streamRequest.assetKey = assetKey;
   streamRequest.apiKey = apiKey || '';
   streamManager.requestStream(streamRequest);
@@ -152,7 +152,7 @@ function requestLiveStream(assetKey, apiKey) {
 
 /**
  * Responds to a stream event.
- * @param  {StreamEvent} e
+ * @param {!google.ima.dai.api.StreamEvent} e
  */
 function onStreamEvent(e) {
   switch (e.type) {
