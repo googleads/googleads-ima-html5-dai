@@ -4,10 +4,10 @@ const BACKUP_STREAM =
     'master.m3u8';
 
 // Live stream asset key.
-const TEST_ASSET_KEY = 'sN_IYUG8STe1ZzhIIE_ksA';
+// const TEST_ASSET_KEY = 'c-rArva4ShKVIAkNfy6HUQ';
 
 // VOD content source and video IDs.
-const TEST_CONTENT_SOURCE_ID = '2528370';
+const TEST_CONTENT_SOURCE_ID = '2548831';
 const TEST_VIDEO_ID = 'tears-of-steel';
 
 // StreamManager which will be used to request ad-enabled streams.
@@ -20,7 +20,7 @@ let videoElement;
 let adUiElement;
 
 // Whether the stream is currently in an ad break.
-var isAdBreak;
+let isAdBreak;
 
 /**
  * Initializes the video player.
@@ -50,8 +50,8 @@ function initPlayer() {
 
 /**
  * Requests a Live stream with ads.
- * @param  {string} assetKey
- * @param  {?string} apiKey
+ * @param {string} assetKey
+ * @param {?string} apiKey
  */
 function requestLiveStream(assetKey, apiKey) {
   const streamRequest = new google.ima.dai.api.LiveStreamRequest();
@@ -62,9 +62,9 @@ function requestLiveStream(assetKey, apiKey) {
 
 /**
  * Requests a VOD stream with ads.
- * @param  {string} cmsId
- * @param  {string} videoId
- * @param  {?string} apiKey
+ * @param {string} cmsId
+ * @param {string} videoId
+ * @param {?string} apiKey
  */
 function requestVODStream(cmsId, videoId, apiKey) {
   const streamRequest = new google.ima.dai.api.VODStreamRequest();
@@ -76,7 +76,7 @@ function requestVODStream(cmsId, videoId, apiKey) {
 
 /**
  * Responds to a stream event.
- * @param  {StreamEvent} e
+ * @param {!google.ima.dai.api.StreamEvent} e
  */
 function onStreamEvent(e) {
   switch (e.type) {
@@ -107,7 +107,7 @@ function onStreamEvent(e) {
 
 /**
  * Loads and plays a Url.
- * @param  {string} url
+ * @param {string} url
  */
 function loadUrl(url) {
   console.log('Loading:' + url);
@@ -118,7 +118,7 @@ function loadUrl(url) {
 
 /**
  * Called to process metadata for the video element.
- * @param {Event} event The add track event.
+ * @param {!Event} event The add track event.
  */
 function onAddTrack(event) {
   const track = event.track;

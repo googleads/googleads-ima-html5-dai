@@ -1,87 +1,87 @@
 // This stream will be played if ad-enabled playback fails.
 
-var BACKUP_STREAM =
+const BACKUP_STREAM =
     'http://storage.googleapis.com/testtopbox-public/video_content/bbb/' +
     'master.m3u8';
 
 // Live stream asset key.
-var TEST_ASSET_KEY = 'sN_IYUG8STe1ZzhIIE_ksA';
+const TEST_ASSET_KEY = 'c-rArva4ShKVIAkNfy6HUQ';
 
 // VOD content source and video IDs.
-var TEST_CONTENT_SOURCE_ID = '2528370';
-var TEST_VIDEO_ID = 'tears-of-steel';
+const TEST_CONTENT_SOURCE_ID = '2548831';
+const TEST_VIDEO_ID = 'tears-of-steel';
 
 // StreamManager which will be used to request ad-enabled streams.
-var streamManager;
+let streamManager;
 
 // hls.js video player.
-var hls = new Hls({autoStartLoad: false});
+const hls = new Hls({autoStartLoad: false});
 
 // Radio button for Live Stream.
-var liveRadio;
+let liveRadio;
 
 // Radio button for VOD stream.
-var vodRadio;
+let vodRadio;
 
 // Live sample fake link.
-var liveFakeLink;
+let liveFakeLink;
 
 // VOD sample fake link.
-var vodFakeLink;
+let vodFakeLink;
 
 // Wrapper for live input fields.
-var liveInputs;
+let liveInputs;
 
 // Wrapper for VOD input fields.
-var vodInputs;
+let vodInputs;
 
 // Text box with asset key.
-var assetKeyInput;
+let assetKeyInput;
 
 // Text box with live API key.
-var liveAPIKeyInput;
+let liveAPIKeyInput;
 
 // Text box with CMS ID.
-var cmsIdInput;
+let cmsIdInput;
 
 // Text box with Video ID.
-var videoIdInput;
+let videoIdInput;
 
 // Text box with VOD API key.
-var vodAPIKeyInput;
+let vodAPIKeyInput;
 
 // Video element.
-var videoElement;
+let videoElement;
 
 // Play button.
-var playButton;
+let playButton;
 
 // Button to save bookmark to URL.
-var bookmarkButton;
+let bookmarkButton;
 
 // Companion ad div.
-var companionDiv;
+let companionDiv;
 
 // Div showing current ad progress.
-var progressDiv;
+let progressDiv;
 
 // Ad UI div.
-var adUiDiv;
+let adUiDiv;
 
 // Flag tracking if we are currently in snapback mode or not.
-var isSnapback;
+let isSnapback;
 
 // Time to seek to after an ad if that ad was played as the result of snapback.
-var snapForwardTime;
+let snapForwardTime;
 
 // Content time for stream start if it's bookmarked.
-var bookmarkTime;
+let bookmarkTime;
 
 // Whether we are currently playing a live stream or a VOD stream
-var isLiveStream;
+let isLiveStream;
 
 // Whether the stream is currently in an ad break.
-var isAdBreak;
+let isAdBreak;
 
 /**
  * Initializes the page.
@@ -134,7 +134,7 @@ function initPlayer() {
   progressDiv = document.getElementById('progress');
   companionDiv = document.getElementById('companion');
 
-  var queryParams = getQueryParams();
+  const queryParams = getQueryParams();
   bookmarkTime = parseInt(queryParams['bookmark']) || null;
 
   videoElement.addEventListener('seeked', onSeekEnd);
@@ -189,21 +189,21 @@ function onVODRadioClick() {
 
 /**
  * Returns a dictionary of key-value pairs from a GET query string.
- * @return{Object} Key-value dictionary for keys and values in provided query
+ * @return {!Object} Key-value dictionary for keys and values in provided query
  *     string.
  */
 function getQueryParams() {
-  var returnVal = {};
-  var pairs = location.search.substring(1).split('&');
-  for (var i = 0; i < pairs.length; i++) {
-    var pair = pairs[i].split('=');
+  const returnVal = {};
+  const pairs = location.search.substring(1).split('&');
+  for (let i = 0; i < pairs.length; i++) {
+    const pair = pairs[i].split('=');
     returnVal[pair[0]] = decodeURIComponent(pair[1]);
   }
   return returnVal;
 }
 
 /**
- * Handles play button clicks by requsting a stream. Also removes itself so we
+ * Handles play button clicks by requesting a stream. Also removes itself so we
  * don't request more streams on subsequent clicks.
  */
 function onPlayButtonClick() {
@@ -227,7 +227,7 @@ function onBookmarkButtonClick() {
   if (isLiveStream) {
     alert('Error: this functionality only works for VOD streams');
   }
-  var bookmarkTime = Math.floor(
+  const bookmarkTime = Math.floor(
       streamManager.contentTimeForStreamTime(videoElement.currentTime));
   history.pushState(null, null, 'dai.html?bookmark=' + bookmarkTime);
 }
@@ -237,7 +237,7 @@ function onBookmarkButtonClick() {
  */
 function requestLiveStream() {
   isLiveStream = true;
-  var streamRequest = new google.ima.dai.api.LiveStreamRequest();
+  const streamRequest = new google.ima.dai.api.LiveStreamRequest();
   streamRequest.assetKey = assetKeyInput.value;
   streamRequest.apiKey = liveAPIKeyInput.value || '';
   streamManager.requestStream(streamRequest);
@@ -248,7 +248,7 @@ function requestLiveStream() {
  */
 function requestVODStream() {
   isLiveStream = false;
-  var streamRequest = new google.ima.dai.api.VODStreamRequest();
+  const streamRequest = new google.ima.dai.api.VODStreamRequest();
   streamRequest.contentSourceId = cmsIdInput.value;
   streamRequest.videoId = videoIdInput.value;
   streamRequest.apiKey = vodAPIKeyInput.value;
@@ -257,7 +257,7 @@ function requestVODStream() {
 
 /**
  * Loads the stream.
- * @param{StreamEvent} e StreamEvent fired when stream is loaded.
+ * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired when stream is loaded.
  */
 function onStreamLoaded(e) {
   console.log('Stream loaded');
@@ -266,7 +266,7 @@ function onStreamLoaded(e) {
 
 /**
  * Handles stream errors. Plays backup content.
- * @param{StreamEvent} e StreamEvent fired on stream error.
+ * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired on stream error.
  */
 function onStreamError(e) {
   console.log('Error loading stream, playing backup stream.' + e);
@@ -275,22 +275,22 @@ function onStreamError(e) {
 
 /**
  * Updates the progress div.
- * @param{StreamEvent} e StreamEvent fired when ad progresses.
+ * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired when ad progresses.
  */
 function onAdProgress(e) {
-  var adProgressData = e.getStreamData().adProgressData;
-  var currentAdNum = adProgressData.adPosition;
-  var totalAds = adProgressData.totalAds;
-  var currentTime = adProgressData.currentTime;
-  var duration = adProgressData.duration;
-  var remainingTime = Math.floor(duration - currentTime);
+  const adProgressData = e.getStreamData().adProgressData;
+  const currentAdNum = adProgressData.adPosition;
+  const totalAds = adProgressData.totalAds;
+  const currentTime = adProgressData.currentTime;
+  const duration = adProgressData.duration;
+  const remainingTime = Math.floor(duration - currentTime);
   progressDiv.innerHTML =
       'Ad (' + currentAdNum + ' of ' + totalAds + ') ' + remainingTime + 's';
 }
 
 /**
  * Handles ad break started.
- * @param{StreamEvent} e StreamEvent fired for ad break start.
+ * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired for ad break start.
  */
 function onAdBreakStarted(e) {
   console.log('Ad Break Started');
@@ -304,7 +304,7 @@ function onAdBreakStarted(e) {
 
 /**
  * Handles ad break ended.
- * @param{StreamEvent} e Stream event fired for ad break end.
+ * @param {!google.ima.dai.api.StreamEvent} e Stream event fired for ad break end.
  */
 function onAdBreakEnded(e) {
   console.log('Ad Break Ended');
@@ -322,9 +322,9 @@ function onAdBreakEnded(e) {
  *  Handles ad started and displays companion ad, if any.
  */
 function onAdStarted(e) {
-  var companionAds = e.getAd().getCompanionAds();
-  for (var i = 0; i < companionAds.length; i++) {
-    var companionAd = companionAds[i];
+  const companionAds = e.getAd().getCompanionAds();
+  for (let i = 0; i < companionAds.length; i++) {
+    const companionAd = companionAds[i];
     if (companionAd.getWidth() == 728 && companionAd.getHeight() == 90) {
       companionDiv.innerHTML = companionAd.getContent();
     }
@@ -333,15 +333,15 @@ function onAdStarted(e) {
 
 /**
  * Loads and plays a Url.
- * @param  {string} url
+ * @param {string} url
  */
 function loadUrl(url) {
   console.log('Loading:' + url);
   hls.on(Hls.Events.MANIFEST_PARSED, () => {
     console.log('Video Play');
-    var startTime = 0;
+    let startTime = 0;
     if (bookmarkTime) {
-      var startTime = streamManager.streamTimeForContentTime(bookmarkTime);
+      startTime = streamManager.streamTimeForContentTime(bookmarkTime);
       // Seeking on load will trigger the onSeekEnd event, so treat this seek as
       // if it's snapback. Without this, resuming at a bookmark will kick you
       // back to the ad before the bookmark.
@@ -369,8 +369,8 @@ function onSeekEnd() {
     isSnapback = false;
     return;
   }
-  var currentTime = videoElement.currentTime;
-  var previousCuePoint =
+  const currentTime = videoElement.currentTime;
+  const previousCuePoint =
       streamManager.previousCuePointForStreamTime(currentTime);
   if (previousCuePoint && !previousCuePoint.played) {
     console.log(
