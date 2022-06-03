@@ -8,13 +8,8 @@ const BACKUP_STREAM =
 const TEST_ASSET_KEY = 'c-rArva4ShKVIAkNfy6HUQ';
 
 // VOD content source and video IDs.
-<<<<<<< HEAD
 const TEST_CONTENT_SOURCE_ID = '2548831';
 const TEST_VIDEO_ID = 'tears-of-steel';
-=======
-var TEST_CONTENT_SOURCE_ID = '19463';
-var TEST_VIDEO_ID = 'tears-of-steel';
->>>>>>> bd6c465 (Internal change)
 
 // StreamManager which will be used to request ad-enabled streams.
 let streamManager;
@@ -68,11 +63,7 @@ let bookmarkButton;
 let companionDiv;
 
 // Div showing current ad progress.
-<<<<<<< HEAD
 let progressDiv;
-=======
-var progressDiv;
->>>>>>> bd6c465 (Internal change)
 
 // Ad UI div.
 let adUiDiv;
@@ -296,7 +287,6 @@ function onStreamError(e) {
 
 /**
  * Updates the progress div.
-<<<<<<< HEAD
  * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired when ad progresses.
  */
 function onAdProgress(e) {
@@ -306,28 +296,13 @@ function onAdProgress(e) {
   const currentTime = adProgressData.currentTime;
   const duration = adProgressData.duration;
   const remainingTime = Math.floor(duration - currentTime);
-=======
- * @param{StreamEvent} e StreamEvent fired when ad progresses.
- */
-function onAdProgress(e) {
-  var adProgressData = e.getStreamData().adProgressData;
-  var currentAdNum = adProgressData.adPosition;
-  var totalAds = adProgressData.totalAds;
-  var currentTime = adProgressData.currentTime;
-  var duration = adProgressData.duration;
-  var remainingTime = Math.floor(duration - currentTime);
->>>>>>> bd6c465 (Internal change)
   progressDiv.innerHTML =
       'Ad (' + currentAdNum + ' of ' + totalAds + ') ' + remainingTime + 's';
 }
 
 /**
  * Handles ad break started.
-<<<<<<< HEAD
  * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired for ad break start.
-=======
- * @param{StreamEvent} e StreamEvent fired for ad break start.
->>>>>>> bd6c465 (Internal change)
  */
 function onAdBreakStarted(e) {
   console.log('Ad Break Started');
@@ -341,11 +316,7 @@ function onAdBreakStarted(e) {
 
 /**
  * Handles ad break ended.
-<<<<<<< HEAD
  * @param {!google.ima.dai.api.StreamEvent} e Stream event fired for ad break end.
-=======
- * @param{StreamEvent} e Stream event fired for ad break end.
->>>>>>> bd6c465 (Internal change)
  */
 function onAdBreakEnded(e) {
   console.log('Ad Break Ended');
@@ -356,11 +327,7 @@ function onAdBreakEnded(e) {
     videoElement.currentTime = snapForwardTime;
     snapForwardTime = null;
   }
-<<<<<<< HEAD
   progressDiv.textContent = '';
-=======
-  progressDiv.innerHTML = '';
->>>>>>> bd6c465 (Internal change)
 }
 
 /**
