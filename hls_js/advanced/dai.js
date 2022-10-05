@@ -189,7 +189,11 @@ function onVODRadioClick() {
 
 /**
  * Returns a dictionary of key-value pairs from a GET query string.
+<<<<<<< HEAD
  * @return {!Object} Key-value dictionary for keys and values in provided query
+=======
+ * @return{Object} Key-value dictionary for keys and values in provided query
+>>>>>>> bd6c465 (Internal change)
  *     string.
  */
 function getQueryParams() {
@@ -257,7 +261,11 @@ function requestVODStream() {
 
 /**
  * Loads the stream.
+<<<<<<< HEAD
  * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired when stream is loaded.
+=======
+ * @param{StreamEvent} e StreamEvent fired when stream is loaded.
+>>>>>>> bd6c465 (Internal change)
  */
 function onStreamLoaded(e) {
   console.log('Stream loaded');
@@ -266,7 +274,11 @@ function onStreamLoaded(e) {
 
 /**
  * Handles stream errors. Plays backup content.
+<<<<<<< HEAD
  * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired on stream error.
+=======
+ * @param{StreamEvent} e StreamEvent fired on stream error.
+>>>>>>> bd6c465 (Internal change)
  */
 function onStreamError(e) {
   console.log('Error loading stream, playing backup stream.' + e);
