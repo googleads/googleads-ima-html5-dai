@@ -5,15 +5,19 @@ This project hosts samples for the
 
 ### Samples breakdown
 
-[HLS.js simple](https://github.com/googleads/googleads-ima-html5-dai/tree/main/hls_js/simple) -
-Simple example using HLS.js.
-
-[HLS.js advanced](https://github.com/googleads/googleads-ima-html5-dai/tree/main/hls_js/advanced) -
-Advanced example using HLS.js.
-
-[DAI Pre-roll](https://github.com/googleads/googleads-ima-html5-dai/tree/main/dai_preroll) -
-Demonstrates using the IMA client-side SDK to request a pre-roll ad, then the
-IMA DAI SDK to play a DAI stream with mid-rolls.
+*   [hls_js/simple](https://github.com/googleads/googleads-ima-html5-dai/tree/main/hls_js/simple) -
+    Simple example using HLS.js. Supports HLS streams in
+    [browsers that support the HLS.js javascript library](https://github.com/video-dev/hls.js/#compatibility).
+*   [hls_js/advanced](https://github.com/googleads/googleads-ima-html5-dai/tree/main/hls_js/advanced) -
+    Advanced example using HLS.js. Supports HLS streams in
+    [browsers that support the HLS.js javascript library](https://github.com/video-dev/hls.js/#compatibility).
+*   [hls_js/dai_preroll](https://github.com/googleads/googleads-ima-html5-dai/tree/main/dai_preroll) -
+    Demonstrates using the IMA client-side SDK to request a pre-roll ad, then
+    the IMA DAI SDK to play a DAI stream with mid-rolls. Supports HLS streams in
+    [browsers that support the HLS.js javascript library](https://github.com/video-dev/hls.js/#compatibility).
+*   [native/simple](https://github.com/googleads/googleads-ima-html5-dai/tree/main/native/simple) -
+    Simple example relying on native HLS support. Supports HLS streams in
+    [browsers with native HLS support](https://developer.mozilla.org/en-US/docs/Web/Guide/Audio_and_video_delivery/Live_streaming_web_audio_and_video#streaming_file_format_support).
 
 ### Requirements
 
