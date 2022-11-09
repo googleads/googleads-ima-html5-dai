@@ -37,11 +37,15 @@ let adUiElement;
 // Whether the stream is currently in an ad break.
 let isAdBreak;
 
+// The play/resume button
+let playButton;
+
 /**
  * Initializes the video player.
  */
 function initPlayer() {
   videoElement = document.getElementById('video');
+  playButton = document.getElementById('play-button');
   adUiElement = document.getElementById('adUi');
 
   videoElement.addEventListener('pause', onStreamPause);
@@ -88,7 +92,26 @@ function initPlayer() {
       });
     }
   });
+
+  playButton.addEventListener('click', initiatePlayback);
+}
+
+/**
+ * Initiate stream playback.
+ */
+function initiatePlayback() {
   requestPreroll(TEST_AD_TAG);
+  playButton.removeEventListener('click', initiatePlayback);
+  playButton.style.display = 'none';
+}
+
+/**
+ * Initiate pre-roll playback after ad click-through.
+ */
+function resumePrerollPlayback() {
+  adsManager.resume();
+  playButton.removeEventListener('click', resumePrerollPlayback);
+  playButton.style.display = 'none';
 }
 
 /**
@@ -118,6 +141,19 @@ function onAdsManagerLoaded(adsManagerLoadedEvent) {
         console.log('Content resume requested.');
         requestLiveStream(TEST_ASSET_KEY, null);
       });
+  adsManager.addEventListener(
+      google.ima.AdEvent.Type.PAUSED, function(e) {
+        console.log('Preroll paused.');
+        playButton.addEventListener('click', resumePrerollPlayback);
+        playButton.style.display = 'block';
+      });
+  adsManager.addEventListener(
+      google.ima.AdEvent.Type.ALL_ADS_COMPLETED, function(e) {
+        console.log('All pre-roll ads completed.');
+        adDisplayContainer.destroy();
+        document.getElementById('adContainer').style.display = 'none';
+      });
+
   try {
     adsManager.init(640, 360, google.ima.ViewMode.NORMAL);
     adsManager.start();
@@ -202,7 +238,7 @@ function onStreamPause() {
   console.log('paused');
   if (isAdBreak) {
     videoElement.controls = true;
-    adUiDiv.style.display = 'none';
+    adUiElement.style.display = 'none';
   }
 }
 
@@ -213,6 +249,6 @@ function onStreamPlay() {
   console.log('played');
   if (isAdBreak) {
     videoElement.controls = false;
-    adUiDiv.style.display = 'block';
+    adUiElement.style.display = 'block';
   }
 }
