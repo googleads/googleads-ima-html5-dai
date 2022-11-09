@@ -23,11 +23,15 @@ let videoElement;
 // Ad UI element
 let adUiElement;
 
+// The play/resume button
+let playButton;
+
 /**
  * Initializes the video player.
  */
 function initPlayer() {
   videoElement = document.getElementById('video');
+  playButton = document.getElementById('play-button');
   adUiElement = document.getElementById('adUi');
   streamManager =
       new google.ima.dai.api.StreamManager(videoElement, adUiElement);
@@ -59,9 +63,32 @@ function initPlayer() {
     }
   });
 
+  videoElement.addEventListener('pause', () => {
+    playButton.style.display = "block";
+  });
+
+  playButton.addEventListener('click', initiatePlayback);
+}
+
+/**
+ * Initiate stream playback.
+ */
+function initiatePlayback() {
   requestVODStream(TEST_CONTENT_SOURCE_ID, TEST_VIDEO_ID, null);
   // Uncomment line below and comment one above to request a LIVE stream.
   // requestLiveStream(TEST_ASSET_KEY, null);
+
+  playButton.style.display = "none";
+  playButton.removeEventListener('click', initiatePlayback);
+  playButton.addEventListener('click', resumePlayback);
+}
+
+/**
+ * Resume ad playback after an ad is paused.
+ */
+function resumePlayback() {
+  videoElement.play();
+  playButton.style.display = "none";
 }
 
 /**

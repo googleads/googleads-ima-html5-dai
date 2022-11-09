@@ -1,9 +1,10 @@
-#video, #click {
+#video,
+#click {
   width: 640px;
   height: 360px;
   position: absolute;
   top: 35px;
-  left: 0px;
+  left: 0;
 }
 
 #click {
@@ -16,6 +17,12 @@
   background-color: black;
   color: white;
   position: absolute;
-  top: 0px;
-  left: 0px;
+  top: 0;
+  left: 0;
+}
+
+#play-button {
+  position: absolute;
+  top: 400px;
+  left: 15px;
 }
