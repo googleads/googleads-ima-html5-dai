@@ -141,12 +141,11 @@ function onAdsManagerLoaded(adsManagerLoadedEvent) {
         console.log('Content resume requested.');
         requestLiveStream(TEST_ASSET_KEY, null);
       });
-  adsManager.addEventListener(
-      google.ima.AdEvent.Type.PAUSED, function(e) {
-        console.log('Preroll paused.');
-        playButton.addEventListener('click', resumePrerollPlayback);
-        playButton.style.display = 'block';
-      });
+  adsManager.addEventListener(google.ima.AdEvent.Type.PAUSED, function(e) {
+    console.log('Preroll paused.');
+    playButton.addEventListener('click', resumePrerollPlayback);
+    playButton.style.display = 'block';
+  });
   adsManager.addEventListener(
       google.ima.AdEvent.Type.ALL_ADS_COMPLETED, function(e) {
         console.log('All pre-roll ads completed.');

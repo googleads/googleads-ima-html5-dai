@@ -257,7 +257,8 @@ function requestVODStream() {
 
 /**
  * Loads the stream.
- * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired when stream is loaded.
+ * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired when stream is
+ *     loaded.
  */
 function onStreamLoaded(e) {
   console.log('Stream loaded');
@@ -275,7 +276,8 @@ function onStreamError(e) {
 
 /**
  * Updates the progress div.
- * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired when ad progresses.
+ * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired when ad
+ *     progresses.
  */
 function onAdProgress(e) {
   const adProgressData = e.getStreamData().adProgressData;
@@ -290,7 +292,8 @@ function onAdProgress(e) {
 
 /**
  * Handles ad break started.
- * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired for ad break start.
+ * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired for ad break
+ *     start.
  */
 function onAdBreakStarted(e) {
   console.log('Ad Break Started');
@@ -304,7 +307,8 @@ function onAdBreakStarted(e) {
 
 /**
  * Handles ad break ended.
- * @param {!google.ima.dai.api.StreamEvent} e Stream event fired for ad break end.
+ * @param {!google.ima.dai.api.StreamEvent} e Stream event fired for ad break
+ *     end.
  */
 function onAdBreakEnded(e) {
   console.log('Ad Break Ended');
