@@ -64,7 +64,7 @@ function initPlayer() {
   });
 
   videoElement.addEventListener('pause', () => {
-    playButton.style.display = "block";
+    playButton.style.display = 'block';
   });
 
   playButton.addEventListener('click', initiatePlayback);
@@ -78,7 +78,7 @@ function initiatePlayback() {
   // Uncomment line below and comment one above to request a LIVE stream.
   // requestLiveStream(TEST_ASSET_KEY, null);
 
-  playButton.style.display = "none";
+  playButton.style.display = 'none';
   playButton.removeEventListener('click', initiatePlayback);
   playButton.addEventListener('click', resumePlayback);
 }
@@ -88,7 +88,7 @@ function initiatePlayback() {
  */
 function resumePlayback() {
   videoElement.play();
-  playButton.style.display = "none";
+  playButton.style.display = 'none';
 }
 
 /**
