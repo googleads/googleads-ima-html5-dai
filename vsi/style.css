@@ -151,6 +151,32 @@ input[type="radio"] {
   margin-top: 10px;
 }
 
+#ad-tag-parameters {
+  margin-top: 16px;
+}
+
+.adTagParameterCloseButton {
+  margin-left: 10px;
+}
+
+#add-ad-tag-parameter-button {
+  margin: 10px 0 0 14px;
+}
+
+.ad-tag-parameter-key-label {
+  margin-right: 4px;
+}
+
+.ad-tag-parameter-value-label {
+  margin: 0 4px;
+}
+
+.ad-tag-parameter-warning {
+  color: red;
+  font-size: 12px;
+  display: block;
+}
+
 #container {
   max-width: 900px;
   width: 100%;
@@ -160,7 +186,7 @@ input[type="radio"] {
   position: relative;
   background-color: #000;
   border-radius: 5px;
-  box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.95);
+  box-shadow: 0 0 20px rgba(50, 50, 50, 0.95);
   border: 2px #ccc solid;
   max-width: 640px;
   width: 100%;
@@ -181,8 +207,8 @@ input[type="radio"] {
 
 #content {
   position: absolute;
-  top: 0px;
-  left: 0px;
+  top: 0;
+  left: 0;
   max-width: 640px;
   width: 100%;
   height: 360px;
@@ -192,7 +218,8 @@ input[type="radio"] {
   vertical-align: top;
 }
 
-#input-wrapper, #buttons {
+#input-wrapper,
+#button-container {
   max-width: 800px;
   width: 100%;
   height: auto;
@@ -246,4 +273,8 @@ input[type="radio"] {
   border: 1px #ccc solid;
   overflow-y: scroll;
   margin-top: 10px;
+}
+
+.hidden {
+  display: none;
 }
