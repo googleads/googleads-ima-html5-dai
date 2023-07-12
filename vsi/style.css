@@ -155,7 +155,7 @@ input[type="radio"] {
   margin-top: 16px;
 }
 
-.adTagParameterCloseButton {
+.ad-tag-parameter-remove-button {
   margin-left: 10px;
 }
 
@@ -175,6 +175,14 @@ input[type="radio"] {
   color: red;
   font-size: 12px;
   display: block;
+}
+
+#add-omsdk-rule-button {
+  margin: 10px 0 0 14px;
+}
+
+.omsdk-setting-remove-button {
+  margin-left: 10px;
 }
 
 #container {
