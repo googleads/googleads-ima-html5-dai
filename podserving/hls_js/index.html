@@ -1,0 +1,41 @@
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <link rel="stylesheet" href="styles.css">
+  <title>DAI Podserving Client Sample (HLS streams)</title>
+</head>
+<body>
+  <div id="content">
+    <h1>Pod Serving Sample (<span id="playbackMethod">Unknown</span>)</h1>
+    <label>
+      <span>Stream URL:</span>
+      <input id="stream-manifest" type="text" value="https://encodersim.sandbox.google.com/masterPlaylist/9c654d63-5373-4673-8c8d-6d92b66b9d46/master.m3u8?gen-seg-redirect=true&network=51636543&event=google-sample&pids=devrel4628000,devrel896000,devrel3528000,devrel1428000,devrel2628000,devrel1928000&seg-host=dai.google.com&stream_id=[[STREAMID]]">
+      <span class="note">include <em>[[STREAMID]]</em> where the stream id should be inserted into your stream url</span>
+    </label>
+    <label>
+      <span>Network Code:</span>
+      <input id="network-code" type="text" value="51636543">
+    </label>
+    <label>
+      <span>Custom Asset Key:</span>
+      <input id="custom-asset-key" type="text" value="google-sample">
+    </label>
+    <label>
+      <span>API Key:</span>
+      <input id="api-key" type="text" value="">
+    </label>
+    <button id="request-pod">Request Stream</button>
+    <hr>
+    <div id="video-container">
+      <div id="video-ad-ui"></div>
+      <video id="video"></video>
+    </div>
+    <div id="countdown">Not Playing</div>
+    <hr>
+    <div id="log"></div>
+  </div>
+  <script src="https://imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script>
+  <script src="player.js"></script>
+</body>
+</html>

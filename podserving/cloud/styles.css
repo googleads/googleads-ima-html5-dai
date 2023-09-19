@@ -1,0 +1,12 @@
+#video,
+#ad-ui {
+  width: 640px;
+  height: 360px;
+  position: absolute;
+  top: 35px;
+  left: 0;
+}
+
+#ad-ui {
+  cursor: pointer;
+}

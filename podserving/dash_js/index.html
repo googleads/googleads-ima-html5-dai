@@ -1,0 +1,41 @@
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/dashjs@latest/dist/dash.all.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <title>DAI Podserving Client Sample (DASH streams)</title>
+</head>
+<body>
+  <div id="content">
+    <h1>Pod Serving Sample (DASH streams)</h1>
+    <label>
+      <span>Stream URL:</span>
+      <input id="stream-manifest" type="text" value="https://truman-qa.sandbox.google.com/dashsim/events/timeline_ad_break/manifest.mpd?pod_stream_id=[[STREAMID]]&pod_prod_asset_id=network/51636543/custom_asset/podserving_dash_linear">
+      <span class="note">include <em>[[STREAMID]]</em> where the stream id should be inserted into your stream url</span>
+    </label>
+    <label>
+      <span>Network Code:</span>
+      <input id="network-code" type="text" value="51636543">
+    </label>
+    <label>
+      <span>Custom Asset Key:</span>
+      <input id="custom-asset-key" type="text" value="podserving_dash_linear">
+    </label>
+    <label>
+      <span>API Key:</span>
+      <input id="api-key" type="text" value="">
+    </label>
+    <button id="request-pod">Request Stream</button>
+    <hr>
+    <div id="video-container">
+      <div id="video-ad-ui"></div>
+      <video id="video"></video>
+    </div>
+    <div id="countdown">Not Playing</div>
+    <hr>
+    <div id="log"></div>
+  </div>
+  <script src="https://imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script>
+  <script src="player.js"></script>
+</body>
+</html>
