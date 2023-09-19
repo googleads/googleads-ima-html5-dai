@@ -18,6 +18,17 @@ This project hosts samples for the
 *   [native/simple](https://github.com/googleads/googleads-ima-html5-dai/tree/main/native/simple) -
     Simple example relying on native HLS support. Supports HLS streams in
     [browsers with native HLS support](https://developer.mozilla.org/en-US/docs/Web/Guide/Audio_and_video_delivery/Live_streaming_web_audio_and_video#streaming_file_format_support).
+*   [dash_js/simple](https://github.com/googleads/googleads-ima-html5-dai/tree/main/dash_js/simple) -
+    Simple example using DASH.js. For more information see the
+    [DASH.js README](https://github.com/Dash-Industry-Forum/dash.js#readme).
+*   [podserving/hls_js](https://github.com/googleads/googleads-ima-html5-dai/tree/main/podserving/hls_js) -
+    Simple example using HLS.js with IMA DAI SDK and Google DAI Pod Serving.
+    For more information see the
+    [IMA Podserving guide](https://developers.google.com/interactive-media-ads/docs/sdks/html5/dai/podserving).
+*   [podserving/dash_js](https://github.com/googleads/googleads-ima-html5-dai/tree/main/podserving/dash_js) -
+    Simple example using DASH.js with IMA DAI SDK and Google DAI Pod Serving.
+    For more information see the
+    [IMA Podserving guide](https://developers.google.com/interactive-media-ads/docs/sdks/html5/dai/podserving).
 
 ### Requirements
 

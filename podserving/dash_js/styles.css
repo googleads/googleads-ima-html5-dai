@@ -1,0 +1,57 @@
+body{
+  background-color: white;
+  font-family: sans-serif;
+  font-size: 18px;
+}
+#content {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+}
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+label span {
+  display: block;
+  font-weight: bold;
+}
+
+label input, button {
+  display: block;
+  width: 100%;
+  padding: 5px;
+  font-size: 18px;
+}
+
+label span.note {
+  font-weight: normal;
+  font-style: italic;
+  width: auto;
+  font-size: 15px;
+}
+
+button {
+  cursor: pointer;
+}
+
+#video-container {
+  position: relative;
+  padding-bottom: 56.25%;
+  background-color: black;
+}
+#video-ad-ui {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+#video {
+  position: absolute;
+  width:100%;
+  height:100%;
+}
+
+#countdown {
+  margin: 5px 0;
+}
