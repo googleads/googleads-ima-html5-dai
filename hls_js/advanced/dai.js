@@ -1,5 +1,4 @@
 // This stream will be played if ad-enabled playback fails.
-
 const BACKUP_STREAM =
     'http://storage.googleapis.com/testtopbox-public/video_content/bbb/' +
     'master.m3u8';
@@ -8,7 +7,7 @@ const BACKUP_STREAM =
 const TEST_ASSET_KEY = 'c-rArva4ShKVIAkNfy6HUQ';
 
 // VOD content source and video IDs.
-const TEST_CONTENT_SOURCE_ID = '2548831';
+const TEST_CONTENT_SOURCE_ID = '2528370';
 const TEST_VIDEO_ID = 'tears-of-steel';
 
 // StreamManager which will be used to request ad-enabled streams.
