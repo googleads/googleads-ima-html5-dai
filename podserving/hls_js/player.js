@@ -1,6 +1,8 @@
 let adPlaying = false;
 let hls;
 let streamManager;
+let isVodStream;
+let streamId;
 
 const pmElement = document.getElementById('playbackMethod');
 
@@ -8,6 +10,8 @@ const streamUrl = document.getElementById('stream-manifest');
 const netcode = document.getElementById('network-code');
 const assetkey = document.getElementById('custom-asset-key');
 const apikey = document.getElementById('api-key');
+const liveStreamButton = document.getElementById('live-stream-request');
+const vodStreamButton = document.getElementById('vod-stream-request');
 const requestButton = document.getElementById('request-pod');
 
 const adUiElement = document.getElementById('video-ad-ui');
@@ -24,6 +28,10 @@ function init() {
     pmElement.textContent = 'HLS.js';
   }
 
+  // Clear the stream parameters when switching stream types.
+  liveStreamButton.addEventListener('click', clearStreamParameters);
+  vodStreamButton.addEventListener('click', clearStreamParameters);
+
   requestButton.onclick = (e) => {
     e.preventDefault();
     if (!netcode.value || !assetkey.value || !streamUrl.value) {
@@ -31,9 +39,31 @@ function init() {
       setStatus('Error');
       return;
     }
-    logText('Requesting PodServing Stream');
-    requestPodStream(netcode.value, assetkey.value, apikey.value);
+
+    initiateStreamManager();
+    // clear HLS.js instance, if in use.
+    hls?.destroy();
+
+    if (liveStreamButton.checked) {
+      logText('Requesting PodServing Live Stream');
+      requestPodLiveStream(netcode.value, assetkey.value, apikey.value);
+      isVodStream = false;
+    } else {
+      logText('Requesting PodServing VOD Stream');
+      requestPodVodStream(netcode.value, assetkey.value, apikey.value);
+      isVodStream = true;
+    }
   };
+}
+
+/**
+ * Clears the stream parameter input fields.
+ */
+function clearStreamParameters() {
+  streamUrl.value = '';
+  netcode.value = '';
+  assetkey.value = '';
+  apikey.value = '';
 }
 
 /**
@@ -48,12 +78,9 @@ function useNativePlayer() {
 }
 
 /**
- * Request the pod stream from Google.
- * @param {string} networkCode - the network code.
- * @param {string} customAssetKey - the asset key.
- * @param {string} apiKey - the api key (optional).
+ * Creates the IMA StreamManager and sets ad event listeners.
  */
-function requestPodStream(networkCode, customAssetKey, apiKey) {
+function initiateStreamManager() {
   // generate a stream manager, on first request
   if (!streamManager) {
     streamManager =
@@ -77,13 +104,30 @@ function requestPodStream(networkCode, customAssetKey, apiKey) {
         ],
         onStreamEvent, false);
   }
-  // clear HLS.js instance, if in use
-  if (hls) {
-    hls.destroy();
-  }
+}
 
-  // Generate a PodServing Stream Request
+/**
+ * Request a pod livestream from Google.
+ * @param {string} networkCode - the network code.
+ * @param {string} customAssetKey - the asset key.
+ * @param {string} apiKey - the api key (optional).
+ */
+function requestPodLiveStream(networkCode, customAssetKey, apiKey) {
   const streamRequest = new google.ima.dai.api.PodStreamRequest();
+  streamRequest.networkCode = networkCode;
+  streamRequest.customAssetKey = customAssetKey;
+  streamRequest.apiKey = apiKey;
+  streamManager.requestStream(streamRequest);
+}
+
+/**
+ * Request a pod VOD stream from Google.
+ * @param {string} networkCode - the network code.
+ * @param {string} customAssetKey - the asset key.
+ * @param {string} apiKey - the api key (optional).
+ */
+function requestPodVodStream(networkCode, customAssetKey, apiKey) {
+  const streamRequest = new google.ima.dai.api.PodVodStreamRequest();
   streamRequest.networkCode = networkCode;
   streamRequest.customAssetKey = customAssetKey;
   streamRequest.apiKey = apiKey;
@@ -99,10 +143,36 @@ function onStreamEvent(e) {
     // Once PodServing stream is initialized, build request
     // for the video stream, including the podserving stream id
     case google.ima.dai.api.StreamEvent.Type.STREAM_INITIALIZED:
-      const streamId = e.getStreamData().streamId;
+      streamId = e.getStreamData().streamId;
       logText('Stream initialized: ' + streamId);
-      const url = buildStreamURL(streamId);
-      loadStream(url);
+      if (isVodStream) {
+        // For VOD streams, IMA requires a call to
+        // StreamManager.loadStreamMetadata() in response to getting the
+        // stream request URL from the video technology partner (VTP) you are
+        // using. It will be similar to this code snippet, but may vary
+        // depending on your VTP.
+        //
+        // vtpInterface.requestStreamURL({
+        //   'streamId': streamId,
+        // })
+        // .then( () => {
+        //   streamManager.loadStreamMetadata();
+        // }, (error) => {
+        //   // Handle the error.
+        // });
+        console.error('VOD stream error: You will need to edit the code to ' +
+                    'make a call to streamManager.loadStreamMetadata() once ' +
+                    'you get the stream URL from your VTP.');
+      } else {
+        const url = buildStreamURL(streamId);
+        loadStream(url);
+      }
+      break;
+    case google.ima.dai.api.StreamEvent.Type.LOADED:
+      if (isVodStream) {
+        const url = buildStreamURL(streamId);
+        loadStream(url);
+      }
       break;
     // Log Errors
     case google.ima.dai.api.StreamEvent.Type.ERROR:
