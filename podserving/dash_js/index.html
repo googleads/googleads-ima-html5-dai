@@ -25,6 +25,15 @@
       <span>API Key:</span>
       <input id="api-key" type="text">
     </label>
+    <label>
+      <span>Pod request type:</span>
+      <div id="request-type">
+        <label for="live-stream-request">Live stream request</label>
+        <input type="radio" id="live-stream-request" name="request-type" value="live" checked />
+        <label for="vod-stream-request">VOD stream request</label>
+        <input type="radio" id="vod-stream-request" name="request-type" value="vod" />
+      </div>
+    </label>
     <button id="request-pod">Request Stream</button>
     <hr>
     <div id="video-container">
