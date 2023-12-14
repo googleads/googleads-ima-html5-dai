@@ -1,11 +1,15 @@
 let adPlaying = false;
 let dashPlayer;
 let streamManager;
+let isVodStream;
+let streamId;
 
 const streamUrl = document.getElementById('stream-manifest');
 const netcode = document.getElementById('network-code');
 const assetkey = document.getElementById('custom-asset-key');
 const apikey = document.getElementById('api-key');
+const liveStreamButton = document.getElementById('live-stream-request');
+const vodStreamButton = document.getElementById('vod-stream-request');
 const requestButton = document.getElementById('request-pod');
 
 const adUiElement = document.getElementById('video-ad-ui');
@@ -17,25 +21,57 @@ const videoElement = document.getElementById('video');
 function init() {
   logText('Initializing');
 
+  // Clear the stream parameters when switching stream types.
+  liveStreamButton.addEventListener('click', clearStreamParameters);
+  vodStreamButton.addEventListener('click', clearStreamParameters);
+
   requestButton.onclick = (e) => {
     e.preventDefault();
-    if (!netcode.value || !assetkey.value || !streamUrl.value) {
-      logText('ERROR: Network Code, Asset Key, and Stream URL are required');
-      setStatus('Error');
-      return;
+    if (liveStreamButton.checked) {
+      if (!netcode.value || !assetkey.value || !streamUrl.value) {
+        logText('ERROR: Network Code, Asset Key, and Stream URL are required ' +
+               'for livestream requests.');
+        setStatus('Error');
+        return;
+      }
+    } else {
+      if (!netcode.value) {
+        logText('ERROR: Network Code is required for VOD stream requests.');
+        setStatus('Error');
+        return;
+      }
     }
-    logText('Requesting PodServing Stream');
-    requestPodStream(netcode.value, assetkey.value, apikey.value);
+
+    initiateStreamManager();
+    // clear DASH.js instance, if in use.
+    dashPlayer?.destroy();
+
+    if (liveStreamButton.checked) {
+      logText('Requesting PodServing Live Stream');
+      requestPodLiveStream(netcode.value, assetkey.value, apikey.value);
+      isVodStream = false;
+    } else {
+      logText('Requesting PodServing VOD Stream');
+      requestPodVodStream(netcode.value);
+      isVodStream = true;
+    }
   };
 }
 
 /**
- * Request the pod stream from Google.
- * @param {string} networkCode - the network code.
- * @param {string} customAssetKey - the asset key.
- * @param {string} apiKey - the api key (optional).
+ * Clears the stream parameter input fields.
  */
-function requestPodStream(networkCode, customAssetKey, apiKey) {
+function clearStreamParameters() {
+  streamUrl.value = '';
+  netcode.value = '';
+  assetkey.value = '';
+  apikey.value = '';
+}
+
+/**
+ * Creates the IMA StreamManager and sets ad event listeners.
+ */
+function initiateStreamManager() {
   // generate a stream manager, on first request
   if (!streamManager) {
     streamManager =
@@ -59,16 +95,31 @@ function requestPodStream(networkCode, customAssetKey, apiKey) {
         ],
         onStreamEvent, false);
   }
-  // clear DASH.js instance, if in use
-  if (dashPlayer) {
-    dashPlayer.destroy();
-  }
+}
 
+/**
+ * Request a pod livestream from Google.
+ * @param {string} networkCode - the network code.
+ * @param {string} customAssetKey - the asset key.
+ * @param {string} apiKey - the api key (optional).
+ */
+function requestPodLiveStream(networkCode, customAssetKey, apiKey) {
   // Generate a PodServing Stream Request
   const streamRequest = new google.ima.dai.api.PodStreamRequest();
   streamRequest.networkCode = networkCode;
   streamRequest.customAssetKey = customAssetKey;
   streamRequest.apiKey = apiKey;
+  streamRequest.format = 'dash'; // Defaults to 'hls' if not set.
+  streamManager.requestStream(streamRequest);
+}
+
+/**
+ * Request a pod VOD stream from Google.
+ * @param {string} networkCode - the network code.
+ */
+function requestPodVodStream(networkCode) {
+  const streamRequest = new google.ima.dai.api.PodVodStreamRequest();
+  streamRequest.networkCode = networkCode;
   streamRequest.format = 'dash'; // Defaults to 'hls' if not set.
   streamManager.requestStream(streamRequest);
 }
@@ -82,10 +133,36 @@ function onStreamEvent(e) {
     // Once PodServing stream is initialized, build request
     // for the video stream, including the podserving stream id
     case google.ima.dai.api.StreamEvent.Type.STREAM_INITIALIZED:
-      const streamId = e.getStreamData().streamId;
+      streamId = e.getStreamData().streamId;
       logText('Stream initialized: ' + streamId);
-      const url = buildStreamURL(streamId);
-      loadStream(url);
+      if (isVodStream) {
+        // For VOD streams, IMA requires a call to
+        // StreamManager.loadStreamMetadata() in response to getting the
+        // stream request URL from the video technology partner (VTP) you are
+        // using. It will be similar to this code snippet, but may vary
+        // depending on your VTP.
+        //
+        // vtpInterface.requestStreamURL({
+        //   'streamId': streamId,
+        // })
+        // .then( () => {
+        //   streamManager.loadStreamMetadata();
+        // }, (error) => {
+        //   // Handle the error.
+        // });
+        console.error('VOD stream error: You will need to edit the code to ' +
+                    'make a call to streamManager.loadStreamMetadata() once ' +
+                    'you get the stream URL from your VTP.');
+      } else {
+        const url = buildStreamURL(streamId);
+        loadStream(url);
+      }
+      break;
+    case google.ima.dai.api.StreamEvent.Type.LOADED:
+      if (isVodStream) {
+        const url = buildStreamURL(streamId);
+        loadStream(url);
+      }
       break;
     // Log Errors
     case google.ima.dai.api.StreamEvent.Type.ERROR:
@@ -212,7 +289,8 @@ function processMetadata(metadataEvent) {
   const timestamp = metadataEvent.event.calculatedPresentationTime;
 
   // Use StreamManager.processMetadata() if your video player provides raw
-  // ID3 tags, as with dash.js.
+  // ID3 tags, as with dash.js. Otherwise, use StreamManager.onTimedMetadata()
+  // for handling processed metadata.
   streamManager.processMetadata('ID3', messageData, timestamp);
 }
 

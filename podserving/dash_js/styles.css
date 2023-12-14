@@ -35,6 +35,20 @@ button {
   cursor: pointer;
 }
 
+#request-type {
+  display: block;
+}
+
+#request-type label {
+  display: inline-block;
+}
+
+#request-type input {
+  display: inline-block;
+  width: auto;
+  margin-right: 30px;
+}
+
 #video-container {
   position: relative;
   padding-bottom: 56.25%;
