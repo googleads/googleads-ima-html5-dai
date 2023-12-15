@@ -1,7 +1,7 @@
-## Google Ads HTML5 DAI IMA SDK
+## Google Ads DAI SDK for HTML5
 
 This project hosts samples for the
-[HTML5 DAI IMA SDK](https://developers.google.com/interactive-media-ads/docs/sdks/html5/dai).
+[DAI SDK for HTML5](https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5).
 
 ### Samples breakdown
 
@@ -13,7 +13,7 @@ This project hosts samples for the
     [browsers that support the HLS.js javascript library](https://github.com/video-dev/hls.js/#compatibility).
 *   [hls_js/dai_preroll](https://github.com/googleads/googleads-ima-html5-dai/tree/main/dai_preroll) -
     Demonstrates using the IMA client-side SDK to request a pre-roll ad, then
-    the IMA DAI SDK to play a DAI stream with mid-rolls. Supports HLS streams in
+    the DAI SDK to play a DAI stream with mid-rolls. Supports HLS streams in
     [browsers that support the HLS.js javascript library](https://github.com/video-dev/hls.js/#compatibility).
 *   [native/simple](https://github.com/googleads/googleads-ima-html5-dai/tree/main/native/simple) -
     Simple example relying on native HLS support. Supports HLS streams in
@@ -22,13 +22,13 @@ This project hosts samples for the
     Simple example using DASH.js. For more information see the
     [DASH.js README](https://github.com/Dash-Industry-Forum/dash.js#readme).
 *   [podserving/hls_js](https://github.com/googleads/googleads-ima-html5-dai/tree/main/podserving/hls_js) -
-    Simple example using HLS.js with IMA DAI SDK and Google DAI Pod Serving.
-    For more information see the
-    [IMA Podserving guide](https://developers.google.com/interactive-media-ads/docs/sdks/html5/dai/podserving).
+    Simple example using HLS.js with DAI SDK and Google DAI Pod Serving. For
+    more information see the
+    [DAI pod serving guide](https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5?service=pod).
 *   [podserving/dash_js](https://github.com/googleads/googleads-ima-html5-dai/tree/main/podserving/dash_js) -
-    Simple example using DASH.js with IMA DAI SDK and Google DAI Pod Serving.
-    For more information see the
-    [IMA Podserving guide](https://developers.google.com/interactive-media-ads/docs/sdks/html5/dai/podserving).
+    Simple example using DASH.js with DAI SDK and Google DAI Pod Serving. For
+    more information see the
+    [DAI pod serving guide](https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5?service=pod).
 
 ### Requirements
 
@@ -38,7 +38,7 @@ host the sample.
 ### More Info
 
 For more information, see the documentation at
-https://developers.google.com/interactive-media-ads/docs/sdks/html5/dai.
+https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5.
 
 ### Announcements and Updates
 
