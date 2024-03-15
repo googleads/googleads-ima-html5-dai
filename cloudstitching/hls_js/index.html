@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!-- Copyright 2024 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. -->
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script src="//imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script>
+  <script src="player.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body onLoad="initPlayer()">
+  <h2>IMA DAI SDK Demo with Cloud Video Stitcher API</h2>
+  <div>Player type: (<span id="playback-method">Unknown</span>)</div>
+  <label>
+    <span><b>Stream type:</b></span>
+    <div id="request-type">
+      <div>
+        <input type="radio" id="livestream-request" name="request-type" value="live" checked />
+        <label for="livestream-request">Live</label>
+      </div>
+      <div>
+        <input type="radio" id="vod-stream-request" name="request-type" value="vod" />
+        <label for="vod-stream-request">Video on demand (VOD)</label>
+      </div>
+    </div>
+  </label>
+  <button id="request-stream">Request and play stream</button>
+  <video id="video" muted="false" autoplay="true"></video>
+</body>
+</html>
