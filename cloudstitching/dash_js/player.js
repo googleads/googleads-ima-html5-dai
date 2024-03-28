@@ -28,14 +28,14 @@ const CONTENT_SOURCE_URL = ''; // Not used when 'VOD_CONFIG_ID' is set.
 const REGION = '';
 const PROJECT_NUMBER = '';
 const NETWORK_CODE = '';
-const STREAM_FORMAT = 'hls';
+const STREAM_FORMAT = 'dash';
 // Replace 'TOKEN' with the output of gcloud auth print-access-token.
 const TOKEN = '';
 // FILL IN THESE VARIABLES
 
-const BACKUP_STREAM =
-    '//storage.googleapis.com/testtopbox-public/video_content/bbb/master.m3u8';
-let hls;
+const BACKUP_STREAM = 'https://storage.googleapis.com/interactive-media-ads/' +
+'media/tears-of-steel-DASH.mpd';
+let dashPlayer;
 let streamManager;
 let videoElement;
 let adUiElement;
@@ -45,21 +45,35 @@ let isAdBreak;
  * Initializes stream manager and attaches event listeners.
  **/
 function initPlayer() {
-  const playbackMethodElement = document.getElementById('playback-method');
   const requestButton = document.getElementById('request-stream');
   const liveStreamButton = document.getElementById('livestream-request');
-
-  if (useNativePlayer()) {
-    playbackMethodElement.textContent = 'Native Player';
-  } else {
-    playbackMethodElement.textContent = 'HLS.js';
-  }
 
   videoElement = document.getElementById('video');
   adUiElement = document.getElementById('ad-ui');
 
+  dashPlayer = dashjs.MediaPlayer().create();
+  dashPlayer.initialize(videoElement);
+
   videoElement.addEventListener('pause', onStreamPause);
   videoElement.addEventListener('play', onStreamPlay);
+
+  // Timed metadata is only used for LIVE streams.
+  dashPlayer.on('urn:google:dai:2018', (payload) => {
+    const mediaId = payload.event.messageData;
+    const pts = payload.event.calculatedPresentationTime;
+    streamManager.processMetadata('urn:google:dai:2018', mediaId, pts);
+  });
+
+  const manifestLoadedListener = () => {
+    console.log('Stream manifest loaded to video player. Ready to play the stream.');
+    // This listener must be removed, otherwise it triggers as additional
+    // manifests are loaded. The manifest is loaded once for the content,
+    // but additional manifests are loaded for upcoming ad breaks.
+    dashPlayer.off(dashjs.MediaPlayer.events.MANIFEST_LOADED, manifestLoadedListener);
+    dashPlayer.play();
+    videoElement.controls = true;
+  };
+  dashPlayer.on(dashjs.MediaPlayer.events.MANIFEST_LOADED, manifestLoadedListener);
 
   requestButton.onclick = (e) => {
     e.preventDefault();
@@ -72,18 +86,6 @@ function initPlayer() {
       requestVODStream();
     }
   };
-}
-
-/**
- * Checks whether the browser is running on a MacOS or iOS device, to use the
- * native video player instead of the HTML video player.
- * @return {boolean} is the native (Safari) video player supported.
- */
-function useNativePlayer() {
-  // this could be a more advanced check, but instead is a trivial navigator
-  return navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
-      navigator.userAgent && navigator.userAgent.indexOf('CriOS') > -1 &&
-      navigator.userAgent.indexOf('FxiOS') > -1;
 }
 
 /**
@@ -180,7 +182,7 @@ function onStreamEvent(e) {
       loadUrl(e.getStreamData().url);
       break;
     case google.ima.dai.api.StreamEvent.Type.ERROR:
-      console.log('Error loading stream, playing backup stream.' + e);
+      console.log('Error loading stream, playing backup stream.', e.getStreamData().errorMessage);
       loadUrl(BACKUP_STREAM);
       break;
     case google.ima.dai.api.StreamEvent.Type.AD_BREAK_STARTED:
@@ -202,43 +204,12 @@ function onStreamEvent(e) {
 }
 
 /**
- * Loads the stream in HLS.js
+ * Loads the stream in DASH.js player.
  * @param {string} url The url of the stream to load.
  **/
 function loadUrl(url) {
   console.log('Loading:' + url);
-
-  if (useNativePlayer()) {
-    // Safari and iOS web browsers can load HLS files natively.
-    videoElement.src = url;
-    // listen for metadata events to pass to the streammanager
-    videoElement.textTracks.addEventListener('addtrack', onAddTrack);
-    console.log('Video Play');
-    videoElement.play();
-    videoElement.controls = true;
-  } else {
-    // clear HLS.js instance, if in use.
-    hls?.destroy();
-    hls = new Hls();
-    hls.loadSource(url);
-    hls.attachMedia(videoElement);
-
-    // Timed metadata is only used for LIVE streams.
-    hls.on(Hls.Events.FRAG_PARSING_METADATA, function(event, data) {
-      if (streamManager && data) {
-        // For each ID3 tag in the metadata, pass in the type - ID3, the
-        // tag data (a byte array), and the presentation timestamp (PTS).
-        data.samples.forEach(function(sample) {
-          streamManager.processMetadata('ID3', sample.data, sample.pts);
-        });
-      }
-    });
-    hls.on(Hls.Events.MANIFEST_PARSED, function() {
-      console.log('Video Play');
-      videoElement.play();
-      videoElement.controls = true;
-    });
-  }
+  dashPlayer.attachSource(url);
 }
 
 /**
