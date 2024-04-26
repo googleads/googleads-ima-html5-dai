@@ -283,6 +283,11 @@ input[type="radio"] {
   margin-top: 10px;
 }
 
+.button-disabled {
+  cursor: default;
+  background-color: gray;
+}
+
 .hidden {
   display: none;
 }
