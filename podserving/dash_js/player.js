@@ -5,7 +5,7 @@ let isVodStream;
 let streamId;
 
 const streamUrl = document.getElementById('stream-manifest');
-const netcode = document.getElementById('network-code');
+const networkCode = document.getElementById('network-code');
 const assetkey = document.getElementById('custom-asset-key');
 const apikey = document.getElementById('api-key');
 const liveStreamButton = document.getElementById('live-stream-request');
@@ -22,21 +22,22 @@ function init() {
   logText('Initializing');
 
   // Clear the stream parameters when switching stream types.
-  liveStreamButton.addEventListener('click', clearStreamParameters);
-  vodStreamButton.addEventListener('click', clearStreamParameters);
+  liveStreamButton.addEventListener('click', resetStreamParameters);
+  vodStreamButton.addEventListener('click', resetStreamParameters);
 
   requestButton.onclick = (e) => {
     e.preventDefault();
     if (liveStreamButton.checked) {
-      if (!netcode.value || !assetkey.value || !streamUrl.value) {
+      if (!networkCode.value || !assetkey.value || !streamUrl.value) {
         logText('ERROR: Network Code, Asset Key, and Stream URL are required ' +
                'for livestream requests.');
         setStatus('Error');
         return;
       }
     } else {
-      if (!netcode.value) {
-        logText('ERROR: Network Code is required for VOD stream requests.');
+      if (!networkCode.value || !streamUrl.value) {
+        logText('ERROR: Network Code and Stream URL are required for VOD' +
+                'streams.');
         setStatus('Error');
         return;
       }
@@ -48,24 +49,33 @@ function init() {
 
     if (liveStreamButton.checked) {
       logText('Requesting PodServing Live Stream');
-      requestPodLiveStream(netcode.value, assetkey.value, apikey.value);
+      requestPodLiveStream(networkCode.value, assetkey.value, apikey.value);
       isVodStream = false;
     } else {
       logText('Requesting PodServing VOD Stream');
-      requestPodVodStream(netcode.value);
+      requestPodVodStream(networkCode.value);
       isVodStream = true;
     }
   };
 }
 
 /**
- * Clears the stream parameter input fields.
+ * Clears the stream parameter input fields and updates UI to show only the
+ * relevant inputs for the selected stream type.
  */
-function clearStreamParameters() {
+function resetStreamParameters() {
   streamUrl.value = '';
-  netcode.value = '';
+  networkCode.value = '';
   assetkey.value = '';
   apikey.value = '';
+
+  const liveStreamParamContainer =
+      document.getElementById('live-stream-only-params');
+  if (liveStreamButton.checked) {
+    liveStreamParamContainer.classList.remove('hidden');
+  } else {
+    liveStreamParamContainer.classList.add('hidden');
+  }
 }
 
 /**

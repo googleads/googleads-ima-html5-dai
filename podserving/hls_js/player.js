@@ -7,7 +7,7 @@ let streamId;
 const pmElement = document.getElementById('playbackMethod');
 
 const streamUrl = document.getElementById('stream-manifest');
-const netcode = document.getElementById('network-code');
+const networkCode = document.getElementById('network-code');
 const assetkey = document.getElementById('custom-asset-key');
 const apikey = document.getElementById('api-key');
 const liveStreamButton = document.getElementById('live-stream-request');
@@ -29,41 +29,60 @@ function init() {
   }
 
   // Clear the stream parameters when switching stream types.
-  liveStreamButton.addEventListener('click', clearStreamParameters);
-  vodStreamButton.addEventListener('click', clearStreamParameters);
+  liveStreamButton.addEventListener('click', resetStreamParameters);
+  vodStreamButton.addEventListener('click', resetStreamParameters);
 
   requestButton.onclick = (e) => {
     e.preventDefault();
-    if (!netcode.value || !assetkey.value || !streamUrl.value) {
-      logText('ERROR: Network Code, Asset Key, and Stream URL are required');
-      setStatus('Error');
-      return;
+    if (liveStreamButton.checked) {
+      if (!networkCode.value || !assetkey.value || !streamUrl.value) {
+        logText('ERROR: Network Code, Asset Key, and Stream URL are required' +
+               ' for live streams.');
+        setStatus('Error');
+        return;
+      }
+      isVodStream = false;
+    } else {
+      if (!networkCode.value || !streamUrl.value) {
+        logText('ERROR: Network Code and Stream URL are required for VOD' +
+                'streams.');
+        setStatus('Error');
+        return;
+      }
+      isVodStream = true;
     }
 
     initiateStreamManager();
     // clear HLS.js instance, if in use.
     hls?.destroy();
 
-    if (liveStreamButton.checked) {
+    if (!isVodStream) {
       logText('Requesting PodServing Live Stream');
-      requestPodLiveStream(netcode.value, assetkey.value, apikey.value);
-      isVodStream = false;
+      requestPodLiveStream(networkCode.value, assetkey.value, apikey.value);
     } else {
       logText('Requesting PodServing VOD Stream');
-      requestPodVodStream(netcode.value, assetkey.value, apikey.value);
-      isVodStream = true;
+      requestPodVodStream(networkCode.value);
     }
   };
 }
 
 /**
- * Clears the stream parameter input fields.
+ * Clears the stream parameter input fields and updates UI to show only the
+ * relevant inputs for the selected stream type.
  */
-function clearStreamParameters() {
+function resetStreamParameters() {
   streamUrl.value = '';
-  netcode.value = '';
+  networkCode.value = '';
   assetkey.value = '';
   apikey.value = '';
+
+  const liveStreamParamContainer =
+      document.getElementById('live-stream-only-params');
+  if (liveStreamButton.checked) {
+    liveStreamParamContainer.classList.remove('hidden');
+  } else {
+    liveStreamParamContainer.classList.add('hidden');
+  }
 }
 
 /**
@@ -123,14 +142,10 @@ function requestPodLiveStream(networkCode, customAssetKey, apiKey) {
 /**
  * Request a pod VOD stream from Google.
  * @param {string} networkCode - the network code.
- * @param {string} customAssetKey - the asset key.
- * @param {string} apiKey - the api key (optional).
  */
-function requestPodVodStream(networkCode, customAssetKey, apiKey) {
+function requestPodVodStream(networkCode) {
   const streamRequest = new google.ima.dai.api.PodVodStreamRequest();
   streamRequest.networkCode = networkCode;
-  streamRequest.customAssetKey = customAssetKey;
-  streamRequest.apiKey = apiKey;
   streamManager.requestStream(streamRequest);
 }
 
