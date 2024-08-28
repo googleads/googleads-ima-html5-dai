@@ -29,6 +29,9 @@ This project hosts samples for the
     Simple example using DASH.js with DAI SDK and Google DAI Pod Serving. For
     more information see the
     [DAI pod serving guide](https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5?service=pod).
+*   [hbbtv](https://github.com/googleads/googleads-ima-html5-dai/tree/main/hbbtv) -
+    Simple example for requesting and playing ad pods with
+    [HbbTV](https://developer.hbbtv.org/).
 
 ### Requirements
 

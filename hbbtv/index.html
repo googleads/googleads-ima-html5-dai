@@ -1,0 +1,41 @@
+<!--
+Copyright 2024 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!DOCTYPE html PUBLIC "-//HbbTV//1.2.1//EN" "http://www.hbbtv.org/dtd/HbbTV-1.2.1.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>HbbTV Linear Sample App</title>
+    <meta http-equiv="Content-Type" content="application/vnd.hbbtv.xml+xhtml; utf-8" />
+    <script src="https://cdn.jsdelivr.net/npm/dashjs@latest/dist/dash.all.min.js"></script>
+    <script src="//imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script>
+    <script src="application.js"></script>
+    <script src="video_player.js"></script>
+    <script src="ads_manager.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+<body>
+    <object id="broadcast-app-manager" type="application/oipfApplicationManager"></object>
+    <div id="content-wrapper">
+        <div id="console"></div>
+        <div id="broadband-wrapper">
+            <video id="broadband-video"></video>
+        </div>
+        <div id="broadcast-wrapper">
+            <object id="broadcast-video" type="video/broadcast"></object>
+        </div>
+    </div>
+</body>
+</html>
