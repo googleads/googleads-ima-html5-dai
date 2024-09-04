@@ -53,7 +53,7 @@ var HbbTVApp = function() {
 
     debugView.log('HbbTVApp: App loaded');
     this.videoPlayer = new VideoPlayer();
-    this.videoPlayer.setOnAdPodEnded(this.resumeBroadcast().bind(this));
+    this.videoPlayer.setOnAdPodEnded(this.resumeBroadcast.bind(this));
 
   } catch (e) {
     debugView.log('HbbTVApp: No HbbTV device detected.');
