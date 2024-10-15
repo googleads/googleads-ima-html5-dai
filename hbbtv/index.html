@@ -19,8 +19,10 @@ limitations under the License.
   <head>
     <title>HbbTV Linear Sample App</title>
     <meta http-equiv="Content-Type" content="application/vnd.hbbtv.xml+xhtml; utf-8" />
+    <!-- [START load_dependencies] -->
     <script src="https://cdn.jsdelivr.net/npm/dashjs@latest/dist/dash.all.min.js"></script>
     <script src="//imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script>
+    <!-- [END load_dependencies] -->
     <script src="application.js"></script>
     <script src="video_player.js"></script>
     <script src="ads_manager.js"></script>
@@ -30,9 +32,11 @@ limitations under the License.
     <object id="broadcast-app-manager" type="application/oipfApplicationManager"></object>
     <div id="content-wrapper">
         <div id="console"></div>
+        <!-- [START broadband_player] -->
         <div id="broadband-wrapper">
             <video id="broadband-video"></video>
         </div>
+        <!-- [END broadband_player] -->
         <div id="broadcast-wrapper">
             <object id="broadcast-video" type="video/broadcast"></object>
         </div>

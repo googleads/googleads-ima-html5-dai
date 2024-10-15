@@ -35,6 +35,7 @@ var CUSTOM_ASSET_KEY = '';
 var app;
 var debugView;
 
+// [START create_app]
 /** Main HbbTV Application. */
 var HbbTVApp = function() {
   this.broadcastAppManager = document.getElementById('broadcast-app-manager');
@@ -61,6 +62,7 @@ var HbbTVApp = function() {
 
   this.adManager = new AdManager(this.videoPlayer);
 };
+// [END create_app]
 
 /**
  * Listen to play state change events
@@ -69,6 +71,7 @@ HbbTVApp.prototype.onPlayStateChangeEvent = function() {
   var playStateString =
       this.getBroadcastState(this.broadcastContainer.playState);
   debugView.log('onPlayStateChangeEvent event: ' + playStateString);
+  // [START app_presenting_playstate_change]
   if (!this.subscribedToStreamEvents &&
       this.broadcastContainer.playState == PRESENTING_PLAYSTATE) {
     this.subscribedToStreamEvents = true;
@@ -79,6 +82,7 @@ HbbTVApp.prototype.onPlayStateChangeEvent = function() {
     debugView.log('HbbTVApp: Subscribing to stream events.');
     this.adManager.requestStream(NETWORK_CODE, CUSTOM_ASSET_KEY);
   }
+  // [END app_presenting_playstate_change]
 
   if (this.playState != this.broadcastContainer.playState) {
     debugView.log('onPlayStateChange event: ' + playStateString);
@@ -86,6 +90,7 @@ HbbTVApp.prototype.onPlayStateChangeEvent = function() {
   }
 };
 
+// [START app_stream_event]
 /**
  * Callback for HbbTV stream event.
  * @param {!Event} event Stream event payload.
@@ -101,6 +106,7 @@ HbbTVApp.prototype.onStreamEvent = function(event) {
     this.onAdBreakEnd(eventData);
   }
 };
+// [END app_stream_event]
 
 /**
  * Returns current broadcast state.
@@ -128,7 +134,7 @@ HbbTVApp.prototype.getBroadcastState = function() {
   return currentState;
 };
 
-
+// [START app_ad_break_announce]
 /**
  * Callback function on ad break announce stream event.
  * @param {!Event} event HbbTV stream event payload.
@@ -142,7 +148,9 @@ HbbTVApp.prototype.onAdBreakAnnounce = function(event) {
       's offset: ' + eventOffset + 's');
   this.adManager.loadAdPodManifest();
 };
+// [END app_ad_break_announce]
 
+// [START app_ad_break_start]
 /**
  * Callback function on ad break start stream event.
  * @param {!Event} event HbbTV stream event payload.
@@ -157,7 +165,9 @@ HbbTVApp.prototype.onAdBreakStart = function(event) {
   this.stopBroadcast();
   this.videoPlayer.play();
 };
+// [END app_ad_break_start]
 
+// [START app_ad_break_end]
 /**
  * Callback function on ad break end stream event.
  * @param {!Event} event HbbTV stream event payload.
@@ -167,6 +177,7 @@ HbbTVApp.prototype.onAdBreakEnd = function(event) {
   this.videoPlayer.stop();
   this.resumeBroadcast();
 };
+// [END app_ad_break_end]
 
 /** Starts broadcast stream. */
 HbbTVApp.prototype.resumeBroadcast = function() {
