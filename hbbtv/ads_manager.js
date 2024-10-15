@@ -16,6 +16,7 @@
 
 var POD_DURATION = 90000; // Ad pod duration in millisecond.
 
+// [START create_ad_manager]
 /**
  * Wraps IMA SDK ad stream manager.
  * @param {!VideoPlayer} videoPlayer Reference an instance of the wrapper from
@@ -49,7 +50,9 @@ var AdManager = function(videoPlayer) {
 
   this.videoPlayer.setEmsgEventHandler(this.onEmsgEvent, this);
 };
+// [END create_ad_manager]
 
+// [START ads_manager_request_stream]
 /**
  * Makes a pod stream request.
  * @param {string} networkCode The network code.
@@ -62,7 +65,9 @@ AdManager.prototype.requestStream = function(networkCode, customAssetKey) {
   debugView.log('AdsManager: make PodStreamRequest');
   this.streamManager.requestStream(streamRequest);
 };
+// [END ads_manager_request_stream]
 
+// [START ads_manager_stream_event]
 /**
  * Handles IMA playback events.
  * @param {!Event} event The event object.
@@ -97,7 +102,9 @@ AdManager.prototype.onStreamEvent = function(event) {
       break;
   }
 };
+// [END ads_manager_stream_event]
 
+// [START ads_manager_emsg_event]
 /**
  * Callback on Emsg event.
  * Instructs IMA SDK to fire back VAST events accordingly.
@@ -110,7 +117,9 @@ AdManager.prototype.onEmsgEvent = function(event) {
     this.streamManager.processMetadata('ID3', data, pts);
   }
 };
+// [END ads_manager_emsg_event]
 
+// [START ads_manager_load_manifest]
 /**
  * Creates DAI pod url and instructs video player to load manifest.
  */
@@ -124,6 +133,7 @@ AdManager.prototype.loadAdPodManifest = function() {
       this.getPodId(), POD_DURATION);
   this.videoPlayer.preload(manifestUrl);
 };
+// [END ads_manager_load_manifest]
 
 /**
  * Helper Function to get an unused pod ID.

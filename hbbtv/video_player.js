@@ -14,11 +14,16 @@
  limitations under the License.
  */
 
+// [START video_player_scheme_uri]
 var SCHEME_ID_URI = 'https://developer.apple.com/streaming/emsg-id3';
+// [END video_player_scheme_uri]
 
+// [START video_player_ad_buffer]
 // Ads will only play with 10 or more seconds of ad loaded.
 var MIN_BUFFER_THRESHOLD = 10;
+// [END video_player_ad_buffer]
 
+// [START create_video_player]
 /**
  * Video player wrapper class to control ad creative playback with dashjs in
  * broadband.
@@ -38,7 +43,9 @@ var VideoPlayer = function() {
   this.playerListenerCleanup;
   debugView.log('Player: Initializing dashjs');
 };
+// [END create_video_player]
 
+// [START video_player_controls]
 /** Starts playback of ad stream. */
 VideoPlayer.prototype.play = function() {
   debugView.log('Player: Start playback');
@@ -58,7 +65,9 @@ VideoPlayer.prototype.stop = function() {
   this.player = null;
   this.hide();
 };
+// [END video_player_controls]
 
+// [START video_player_set_ad_pod_ended]
 /**
  * Sets a callback function for when an ad pod has ended.
  * @param {!Function} callback Callback function.
@@ -66,7 +75,9 @@ VideoPlayer.prototype.stop = function() {
 VideoPlayer.prototype.setOnAdPodEnded = function(callback) {
   this.onAdPodEndedCallback = callback;
 };
+// [END video_player_set_ad_pod_ended]
 
+// [START video_player_preload]
 /**
  * Starts ad stream prefetching into Media Source Extensions (MSE) buffer.
  * @param {string} url manifest url for ad stream playback.
@@ -91,6 +102,7 @@ VideoPlayer.prototype.preload = function(url) {
   this.attachPlayerListener();
   debugView.log('Player: Pre-loading into MSE buffer');
 };
+// [END video_player_preload]
 
 /**
  * Controls the dashjs player's own logging in the debugging console.
@@ -102,6 +114,7 @@ VideoPlayer.prototype.onLog = function(event) {
   }
 };
 
+// [START video_player_attach_listeners]
 /** Attaches event listener for various dashjs events.*/
 VideoPlayer.prototype.attachPlayerListener = function() {
   var playingHandler = function() {
@@ -139,7 +152,9 @@ VideoPlayer.prototype.attachPlayerListener = function() {
     }
   };
 };
+// [END video_player_attach_listeners]
 
+// [START video_player_emsg_handler]
 /**
  * Sets emsg event handler.
  * @param {!Function} customEventHandler Event handler.
@@ -150,7 +165,9 @@ VideoPlayer.prototype.setEmsgEventHandler = function(
   this.onCustomEventHandler = customEventHandler;
   this.customEventHandlerScope = scope;
 };
+// [END video_player_emsg_handler]
 
+// [START video_player_event_callbacks]
 /**
  * Called when ad stream playback buffered and is playing.
  */
@@ -180,7 +197,9 @@ VideoPlayer.prototype.onAdPodError = function(event) {
     this.onAdPodEndedCallback();
   }
 };
+// [END video_player_event_callbacks]
 
+// [START video_player_show_hide]
 /** Shows the video player. */
 VideoPlayer.prototype.show = function() {
   debugView.log('Player: show');
@@ -192,7 +211,9 @@ VideoPlayer.prototype.hide = function() {
   debugView.log('Player: hide');
   this.broadbandWrapper.style.display = 'none';
 };
+// [END video_player_show_hide]
 
+// [START video_player_is_preloaded]
 /**
  * Checks if the ad is preloaded and ready to play.
  * @return {boolean} whether the ad buffer level is sufficient.
@@ -202,3 +223,4 @@ VideoPlayer.prototype.isPreloaded = function() {
       .getCurrentBufferLevel('video', true);
   return currentBufferLevel >= MIN_BUFFER_THRESHOLD;
 };
+// [END video_player_is_preloaded]
