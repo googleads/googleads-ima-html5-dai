@@ -14,8 +14,6 @@
  limitations under the License.
  */
 
-var POD_DURATION = 90000; // Ad pod duration in millisecond.
-
 // [START create_ad_manager]
 /**
  * Wraps IMA SDK ad stream manager.
@@ -62,6 +60,7 @@ AdManager.prototype.requestStream = function(networkCode, customAssetKey) {
   var streamRequest = new google.ima.dai.api.PodStreamRequest();
   streamRequest.networkCode = networkCode;
   streamRequest.customAssetKey = customAssetKey;
+  streamRequest.format = 'dash';
   debugView.log('AdsManager: make PodStreamRequest');
   this.streamManager.requestStream(streamRequest);
 };
@@ -122,15 +121,23 @@ AdManager.prototype.onEmsgEvent = function(event) {
 // [START ads_manager_load_manifest]
 /**
  * Creates DAI pod url and instructs video player to load manifest.
+ * @param {string} networkCode The network code.
+ * @param {string} customAssetKey The custom asset key.
+ * @param {number} podDuration The duration of the ad pod.
  */
-AdManager.prototype.loadAdPodManifest = function() {
+AdManager.prototype.loadAdPodManifest =
+    function(networkCode, customAssetKey, podDuration) {
   if (!this.streamData) {
     debugView.log('IMA SDK: No DAI pod session registered.');
     return;
   }
 
-  var manifestUrl = this.streamData.getStandalonePodManifestUrl(
-      this.getPodId(), POD_DURATION);
+  var MANIFEST_BASE_URL = 'https://dai.google.com/linear/pods/v1/dash/network/';
+  // Method: DASH pod manifest reference docs:
+  // https://developers.google.com/ad-manager/dynamic-ad-insertion/api/pod-serving/reference/live#method_dash_pod_manifest
+  var manifestUrl = MANIFEST_BASE_URL + networkCode + '/custom_asset/' +
+    customAssetKey + '/stream/' + this.streamData.streamId + '/pod/' +
+    this.getPodId() + '/manifest.mpd?pd=' + podDuration;
   this.videoPlayer.preload(manifestUrl);
 };
 // [END ads_manager_load_manifest]
