@@ -25,23 +25,23 @@ var MIN_BUFFER_THRESHOLD = 10;
 
 // [START create_video_player]
 /**
- * Video player wrapper class to control ad creative playback with dashjs in
+ * Video player wrapper class to control ad creative playback with dash.js in
  * broadband.
  */
 var VideoPlayer = function() {
   this.videoElement = document.querySelector('video');
   this.broadbandWrapper = document.getElementById('broadband-wrapper');
   this.player = dashjs.MediaPlayer().create();
-  this.onAdPodEndedCallback;
+  this.onAdPodEndedCallback = null;
 
   // Function passed in VideoPlayer.prototype.setEmsgEventHandler.
-  this.onCustomEventHandler;
+  this.onCustomEventHandler = null;
   //  Scope (this) passed in VideoPlayer.prototype.setEmsgEventHandler.
-  this.customEventHandlerScope;
+  this.customEventHandlerScope = null;
 
   // Function to remove all of player event listeners.
-  this.playerListenerCleanup;
-  debugView.log('Player: Initializing dashjs');
+  this.cleanUpPlayerListener = null;
+  debugView.log('Player: Creating dash.js player');
 };
 // [END create_video_player]
 
@@ -56,8 +56,8 @@ VideoPlayer.prototype.play = function() {
 /** Stops ad stream playback and deconstructs player. */
 VideoPlayer.prototype.stop = function() {
   debugView.log('Player: Request to stop player');
-  if (this.playerListenerCleanup) {
-    this.playerListenerCleanup();
+  if (this.cleanUpPlayerListener) {
+    this.cleanUpPlayerListener();
   }
   this.player.reset();
   this.player.attachView(null);
@@ -105,8 +105,8 @@ VideoPlayer.prototype.preload = function(url) {
 // [END video_player_preload]
 
 /**
- * Controls the dashjs player's own logging in the debugging console.
- * @param {!Object} event dashjs log event.
+ * Controls the dash.js player's own logging in the debugging console.
+ * @param {!Object} event dash.js log event.
  */
 VideoPlayer.prototype.onLog = function(event) {
   if (event.level < 4) {
@@ -115,7 +115,7 @@ VideoPlayer.prototype.onLog = function(event) {
 };
 
 // [START video_player_attach_listeners]
-/** Attaches event listener for various dashjs events.*/
+/** Attaches event listener for various dash.js events.*/
 VideoPlayer.prototype.attachPlayerListener = function() {
   var playingHandler = function() {
     this.onAdPodPlaying();
@@ -141,7 +141,7 @@ VideoPlayer.prototype.attachPlayerListener = function() {
     this.player.on(SCHEME_ID_URI, customEventHandler);
   }
 
-  this.playerListenerCleanup = function() {
+  this.cleanUpPlayerListener = function() {
     this.player.off(
         dashjs.MediaPlayer.events['PLAYBACK_PLAYING'], playingHandler);
     this.player.off(dashjs.MediaPlayer.events['PLAYBACK_ENDED'], endedHandler);
@@ -191,7 +191,7 @@ VideoPlayer.prototype.onAdPodEnded = function() {
  * @param {!Event} event The error event to handle.
  */
 VideoPlayer.prototype.onAdPodError = function(event) {
-  debugView.log('Player: Ad Playback error from dashjs player.');
+  debugView.log('Player: Ad Playback error from dash.js player.');
   this.stop();
   if (this.onAdPodEndedCallback) {
     this.onAdPodEndedCallback();

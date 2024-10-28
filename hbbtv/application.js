@@ -32,8 +32,8 @@ var AD_BREAK_EVENT_END = 'adBreakEnd';
 var NETWORK_CODE = '';
 var CUSTOM_ASSET_KEY = '';
 
-var app;
-var debugView;
+var app = null;
+var debugView = null;
 
 // [START create_app]
 /** Main HbbTV Application. */
@@ -55,9 +55,9 @@ var HbbTVApp = function() {
     debugView.log('HbbTVApp: App loaded');
     this.videoPlayer = new VideoPlayer();
     this.videoPlayer.setOnAdPodEnded(this.resumeBroadcast.bind(this));
-
   } catch (e) {
     debugView.log('HbbTVApp: No HbbTV device detected.');
+    return;
   }
 
   this.adManager = new AdManager(this.videoPlayer);
@@ -146,7 +146,7 @@ HbbTVApp.prototype.onAdBreakAnnounce = function(event) {
   debugView.log(
       'HbbTV event: ' + eventType + ' duration: ' + eventDuration +
       's offset: ' + eventOffset + 's');
-  this.adManager.loadAdPodManifest();
+  this.adManager.loadAdPodManifest(NETWORK_CODE, CUSTOM_ASSET_KEY, eventDuration);
 };
 // [END app_ad_break_announce]
 
