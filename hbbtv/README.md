@@ -6,6 +6,9 @@ uses HbbTV stream events for detecting ad breaks and
 (version 4.6.0 or later) for ad playback. This application is intended to run
 as an HbbTV app on a compatible device.
 
+For more details on integrating IMA SDK in your own HbbTV app, see
+[Get started with IMA SDK on HbbTV](https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5/hbbtv).
+
 ## Key Features
 
 * **Stream Events:** The app listens for HbbTV broadcast events of upcoming ad
