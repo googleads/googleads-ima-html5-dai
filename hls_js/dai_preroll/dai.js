@@ -17,6 +17,9 @@ const TEST_AD_TAG = 'https://pubads.g.doubleclick.net/gampad/ads?' +
     'cust_params=sample_ct%3Dlinear&ciu_szs=300x250%2C728x90&gdfp_req=1&' +
     'output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=';
 
+const NETWORK_CODE = '21775744923';
+const API_KEY = null;
+
 // StreamManager which will be used to request ad-enabled streams.
 let streamManager;
 
@@ -139,7 +142,7 @@ function onAdsManagerLoaded(adsManagerLoadedEvent) {
   adsManager.addEventListener(
       google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, function(e) {
         console.log('Content resume requested.');
-        requestLiveStream(TEST_ASSET_KEY, null);
+        requestLiveStream(TEST_ASSET_KEY, NETWORK_CODE, API_KEY);
       });
   adsManager.addEventListener(google.ima.AdEvent.Type.PAUSED, function(e) {
     console.log('Preroll paused.');
@@ -176,12 +179,14 @@ function requestPreroll(adTagUrl) {
 /**
  * Requests a Live stream with ads.
  * @param {string} assetKey
+ * @param {?string} networkCode
  * @param {?string} apiKey
  */
-function requestLiveStream(assetKey, apiKey) {
+function requestLiveStream(assetKey, networkCode, apiKey) {
   const streamRequest = new google.ima.dai.api.LiveStreamRequest();
   streamRequest.assetKey = assetKey;
-  streamRequest.apiKey = apiKey || '';
+  streamRequest.networkCode = networkCode;
+  streamRequest.apiKey = apiKey;
   streamManager.requestStream(streamRequest);
 }
 

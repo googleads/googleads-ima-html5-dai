@@ -10,6 +10,8 @@ const TEST_ASSET_KEY = 'c-rArva4ShKVIAkNfy6HUQ';
 const TEST_CONTENT_SOURCE_ID = '2548831';
 const TEST_VIDEO_ID = 'tears-of-steel';
 
+const NETWORK_CODE = '21775744923';
+
 // StreamManager which will be used to request ad-enabled streams.
 let streamManager;
 
@@ -37,17 +39,17 @@ let vodInputs;
 // Text box with asset key.
 let assetKeyInput;
 
-// Text box with live API key.
-let liveAPIKeyInput;
-
 // Text box with CMS ID.
 let cmsIdInput;
 
 // Text box with Video ID.
 let videoIdInput;
 
-// Text box with VOD API key.
-let vodAPIKeyInput;
+// Text box with network code.
+let networkCodeInput;
+
+// Text box with API key.
+let apiKeyInput;
 
 // Video element.
 let videoElement;
@@ -101,10 +103,10 @@ function initUI() {
   liveInputs = document.getElementById('live-inputs');
   vodInputs = document.getElementById('vod-inputs');
   assetKeyInput = document.getElementById('asset-key');
-  liveAPIKeyInput = document.getElementById('live-api-key');
   cmsIdInput = document.getElementById('cms-id');
   videoIdInput = document.getElementById('video-id');
-  vodAPIKeyInput = document.getElementById('vod-api-key');
+  networkCodeInput = document.getElementById('network-code');
+  apiKeyInput = document.getElementById('api-key');
 
   liveRadio.addEventListener('click', onLiveRadioClick);
 
@@ -113,12 +115,14 @@ function initUI() {
   liveFakeLink.addEventListener('click', () => {
     onLiveRadioClick();
     assetKeyInput.value = TEST_ASSET_KEY;
+    networkCodeInput.value = NETWORK_CODE;
   });
 
   vodFakeLink.addEventListener('click', () => {
     onVODRadioClick();
     cmsIdInput.value = TEST_CONTENT_SOURCE_ID;
     videoIdInput.value = TEST_VIDEO_ID;
+    networkCodeInput.value = NETWORK_CODE;
   });
 }
 
@@ -238,7 +242,8 @@ function requestLiveStream() {
   isLiveStream = true;
   const streamRequest = new google.ima.dai.api.LiveStreamRequest();
   streamRequest.assetKey = assetKeyInput.value;
-  streamRequest.apiKey = liveAPIKeyInput.value || '';
+  streamRequest.networkCode = networkCodeInput.value;
+  streamRequest.apiKey = apiKeyInput.value;
   streamManager.requestStream(streamRequest);
 }
 
@@ -250,7 +255,8 @@ function requestVODStream() {
   const streamRequest = new google.ima.dai.api.VODStreamRequest();
   streamRequest.contentSourceId = cmsIdInput.value;
   streamRequest.videoId = videoIdInput.value;
-  streamRequest.apiKey = vodAPIKeyInput.value;
+  streamRequest.networkCode = networkCodeInput.value;
+  streamRequest.apiKey = apiKeyInput.value;
   streamManager.requestStream(streamRequest);
 }
 

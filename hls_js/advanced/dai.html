@@ -1,9 +1,9 @@
 <html>
 <head>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script type="text/javascript" src="https://imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script>
+  <script src="https://imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script>
   <script src="dai.js"></script>
-  <link rel="stylesheet" href="dai.css" type="text/css">
+  <link rel="stylesheet" href="dai.css">
 </head>
 <body onLoad="initPage()">
   <div id="container">
@@ -22,17 +22,17 @@
       <div id="live-inputs" class="input-group">
         <label for="asset-key" class="input-group">Asset key: </label>
         <input type="text" id="asset-key" class="input-group"/><br />
-        <label for="live-api-key" class="input-group">API Key (optional): </label>
-        <input type="text" id="live-api-key" class="input-group"/>
       </div>
       <div id="vod-inputs" class="input-group">
         <label for="cms-id" class="input-group">CMS ID: </label>
         <input type="text" id="cms-id"/>
         <label for="video-id" class="input-group">Video ID: </label>
         <input type="text" id="video-id" class="input-group"/><br />
-        <label for="vod-api-key" class="input-group">API Key (optional): </label>
-        <input type="text" id="vod-api-key" class="input-group"/>
       </div>
+      <label for="network-code" class="input-group">Network code: </label>
+      <input type="text" id="network-code" class="input-group"/>
+      <label for="api-key" class="input-group">API Key (optional): </label>
+      <input type="text" id="api-key" class="input-group"/>
     </div>
 
     <div id="video-player">
