@@ -11,6 +11,9 @@ const BACKUP_STREAM =
 const TEST_CONTENT_SOURCE_ID = '2548831';
 const TEST_VIDEO_ID = 'tears-of-steel';
 
+const NETWORK_CODE = '21775744923';
+const API_KEY = null;
+
 // StreamManager which will be used to request ad-enabled streams.
 let streamManager;
 
@@ -74,9 +77,9 @@ function initPlayer() {
  * Initiate stream playback.
  */
 function initiatePlayback() {
-  requestVODStream(TEST_CONTENT_SOURCE_ID, TEST_VIDEO_ID, null);
+  requestVODStream(TEST_CONTENT_SOURCE_ID, TEST_VIDEO_ID, NETWORK_CODE, API_KEY);
   // Uncomment line below and comment one above to request a LIVE stream.
-  // requestLiveStream(TEST_ASSET_KEY, null);
+  // requestLiveStream(TEST_ASSET_KEY, NETWORK_CODE, API_KEY);
 
   playButton.style.display = 'none';
   playButton.removeEventListener('click', initiatePlayback);
@@ -94,12 +97,14 @@ function resumePlayback() {
 /**
  * Requests a Live stream with ads.
  * @param {string} assetKey
+ * @param {?string} networkCode
  * @param {?string} apiKey
  */
-function requestLiveStream(assetKey, apiKey) {
+function requestLiveStream(assetKey, networkCode, apiKey) {
   const streamRequest = new google.ima.dai.api.LiveStreamRequest();
   streamRequest.assetKey = assetKey;
-  streamRequest.apiKey = apiKey || '';
+  streamRequest.networkCode = networkCode;
+  streamRequest.apiKey = apiKey;
   streamManager.requestStream(streamRequest);
 }
 
@@ -107,12 +112,14 @@ function requestLiveStream(assetKey, apiKey) {
  * Requests a VOD stream with ads.
  * @param {string} cmsId
  * @param {string} videoId
+ * @param {?string} networkCode
  * @param {?string} apiKey
  */
-function requestVODStream(cmsId, videoId, apiKey) {
+function requestVODStream(cmsId, videoId, networkCode, apiKey) {
   const streamRequest = new google.ima.dai.api.VODStreamRequest();
   streamRequest.contentSourceId = cmsId;
   streamRequest.videoId = videoId;
+  streamRequest.networkCode = networkCode;
   streamRequest.apiKey = apiKey;
   streamManager.requestStream(streamRequest);
 }
