@@ -157,7 +157,7 @@ function onAdsManagerLoaded(adsManagerLoadedEvent) {
       });
 
   try {
-    adsManager.init(640, 360, google.ima.ViewMode.NORMAL);
+    adsManager.init(640, 360);
     adsManager.start();
   } catch (adError) {
     // An error may be thrown if there was a problem with the VAST response.
