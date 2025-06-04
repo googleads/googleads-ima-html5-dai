@@ -1,5 +1,5 @@
+// [START init_player]
 // This stream will be played if ad-enabled playback fails.
-
 const BACKUP_STREAM =
     'http://storage.googleapis.com/testtopbox-public/video_content/bbb/' +
     'master.m3u8';
@@ -11,6 +11,7 @@ const BACKUP_STREAM =
 const TEST_CONTENT_SOURCE_ID = '2548831';
 const TEST_VIDEO_ID = 'tears-of-steel';
 
+// Ad Manager network code.
 const NETWORK_CODE = '21775744923';
 const API_KEY = null;
 
@@ -29,6 +30,9 @@ let adUiElement;
 // The play/resume button
 let playButton;
 
+// Whether the stream is currently in an ad break.
+let adBreak = false;
+
 /**
  * Initializes the video player.
  */
@@ -36,62 +40,57 @@ function initPlayer() {
   videoElement = document.getElementById('video');
   playButton = document.getElementById('play-button');
   adUiElement = document.getElementById('adUi');
-  streamManager =
-      new google.ima.dai.api.StreamManager(videoElement, adUiElement);
-  streamManager.addEventListener(
-      [
-        google.ima.dai.api.StreamEvent.Type.LOADED,
-        google.ima.dai.api.StreamEvent.Type.ERROR,
-        google.ima.dai.api.StreamEvent.Type.AD_BREAK_STARTED,
-        google.ima.dai.api.StreamEvent.Type.AD_BREAK_ENDED
-      ],
-      onStreamEvent, false);
+  createStreamManager();
+  listenForMetadata();
 
-  // Add metadata listener. Only used in LIVE streams. Timed metadata
-  // is handled differently by different video players, and the IMA SDK provides
-  // two ways to pass in metadata, StreamManager.processMetadata() and
-  // StreamManager.onTimedMetadata().
-  //
-  // Use StreamManager.onTimedMetadata() if your video player parses
-  // the metadata itself.
-  // Use StreamManager.processMetadata() if your video player provides raw
-  // ID3 tags, as with hls.js.
-  hls.on(Hls.Events.FRAG_PARSING_METADATA, function(event, data) {
-    if (streamManager && data) {
-      // For each ID3 tag in our metadata, we pass in the type - ID3, the
-      // tag data (a byte array), and the presentation timestamp (PTS).
-      data.samples.forEach(function(sample) {
-        streamManager.processMetadata('ID3', sample.data, sample.pts);
-      });
+  // Show the video controls when the video is paused during an ad break,
+  // and hide them when ad playback resumes.
+  videoElement.addEventListener('pause', () => {
+    if (adBreak) {
+      showVideoControls();
+    }
+  });
+  videoElement.addEventListener('play', () => {
+    if (adBreak) {
+      hideVideoControls();
     }
   });
 
-  videoElement.addEventListener('pause', () => {
-    playButton.style.display = 'block';
+  playButton.addEventListener('click', () => {
+    console.log('initiatePlayback');
+    requestStream();
+    // Hide this play button after the first click to request the stream.
+    playButton.style.display = 'none';
   });
-
-  playButton.addEventListener('click', initiatePlayback);
 }
+// [END init_player]
 
+// [START create_stream_manager]
 /**
- * Initiate stream playback.
+ * Create the StreamManager and listen to stream events.
  */
-function initiatePlayback() {
+function createStreamManager() {
+  streamManager =
+      new google.ima.dai.api.StreamManager(videoElement, adUiElement);
+  streamManager.addEventListener(
+      google.ima.dai.api.StreamEvent.Type.LOADED, onStreamEvent);
+  streamManager.addEventListener(
+      google.ima.dai.api.StreamEvent.Type.ERROR, onStreamEvent);
+  streamManager.addEventListener(
+      google.ima.dai.api.StreamEvent.Type.AD_BREAK_STARTED, onStreamEvent);
+  streamManager.addEventListener(
+      google.ima.dai.api.StreamEvent.Type.AD_BREAK_ENDED, onStreamEvent);
+}
+// [END create_stream_manager]
+
+// [START request_stream]
+/**
+ * Makes a stream request and plays the stream.
+ */
+function requestStream() {
   requestVODStream(TEST_CONTENT_SOURCE_ID, TEST_VIDEO_ID, NETWORK_CODE, API_KEY);
   // Uncomment line below and comment one above to request a LIVE stream.
   // requestLiveStream(TEST_ASSET_KEY, NETWORK_CODE, API_KEY);
-
-  playButton.style.display = 'none';
-  playButton.removeEventListener('click', initiatePlayback);
-  playButton.addEventListener('click', resumePlayback);
-}
-
-/**
- * Resume ad playback after an ad is paused.
- */
-function resumePlayback() {
-  videoElement.play();
-  playButton.style.display = 'none';
 }
 
 /**
@@ -123,7 +122,35 @@ function requestVODStream(cmsId, videoId, networkCode, apiKey) {
   streamRequest.apiKey = apiKey;
   streamManager.requestStream(streamRequest);
 }
+// [END request_stream]
 
+// [START listen_for_metadata]
+/**
+ * Set up metadata listeners to pass metadata to the StreamManager.
+ */
+function listenForMetadata() {
+  // Only used in LIVE streams. Timed metadata is handled differently
+  // by different video players, and the IMA SDK provides two ways
+  // to pass in metadata, StreamManager.processMetadata() and
+  // StreamManager.onTimedMetadata().
+  //
+  // Use StreamManager.onTimedMetadata() if your video player parses
+  // the metadata itself.
+  // Use StreamManager.processMetadata() if your video player provides raw
+  // ID3 tags, as with hls.js.
+  hls.on(Hls.Events.FRAG_PARSING_METADATA, function(event, data) {
+    if (streamManager && data) {
+      // For each ID3 tag in our metadata, we pass in the type - ID3, the
+      // tag data (a byte array), and the presentation timestamp (PTS).
+      data.samples.forEach(function(sample) {
+        streamManager.processMetadata('ID3', sample.data, sample.pts);
+      });
+    }
+  });
+}
+// [END listen_for_metadata]
+
+// [START stream_event]
 /**
  * Responds to a stream event.
  * @param {!google.ima.dai.api.StreamEvent} e
@@ -140,13 +167,13 @@ function onStreamEvent(e) {
       break;
     case google.ima.dai.api.StreamEvent.Type.AD_BREAK_STARTED:
       console.log('Ad Break Started');
-      videoElement.controls = false;
-      adUiElement.style.display = 'block';
+      adBreak = true;
+      hideVideoControls();
       break;
     case google.ima.dai.api.StreamEvent.Type.AD_BREAK_ENDED:
       console.log('Ad Break Ended');
-      videoElement.controls = true;
-      adUiElement.style.display = 'none';
+      adBreak = false;
+      showVideoControls();
       break;
     default:
       break;
@@ -166,3 +193,22 @@ function loadUrl(url) {
     videoElement.play();
   });
 }
+// [END stream_event]
+
+// [START video_controls]
+/**
+ * Hides the video controls.
+ */
+function hideVideoControls() {
+  videoElement.controls = false;
+  adUiElement.style.display = 'block';
+}
+
+/**
+ * Shows the video controls.
+ */
+function showVideoControls() {
+  videoElement.controls = true;
+  adUiElement.style.display = 'none';
+}
+// [END video_controls]

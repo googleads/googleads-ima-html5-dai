@@ -1,5 +1,5 @@
 #video,
-#click {
+#adUi {
   width: 640px;
   height: 360px;
   position: absolute;
@@ -7,18 +7,8 @@
   left: 0;
 }
 
-#click {
+#adUi {
   cursor: pointer;
-}
-
-#banner {
-  width: 100%;
-  height: 35px;
-  background-color: black;
-  color: white;
-  position: absolute;
-  top: 0;
-  left: 0;
 }
 
 #play-button {
