@@ -129,10 +129,9 @@ function requestVODStream(cmsId, videoId, networkCode, apiKey) {
  * Set up metadata listeners to pass metadata to the StreamManager.
  */
 function listenForMetadata() {
-  // Only used in LIVE streams. Timed metadata is handled differently
-  // by different video players, and the IMA SDK provides two ways
-  // to pass in metadata, StreamManager.processMetadata() and
-  // StreamManager.onTimedMetadata().
+  // Timed metadata is handled differently by different video players, and the
+  // IMA SDK provides two ways to pass in metadata,
+  // StreamManager.processMetadata() and StreamManager.onTimedMetadata().
   //
   // Use StreamManager.onTimedMetadata() if your video player parses
   // the metadata itself.

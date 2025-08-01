@@ -77,10 +77,9 @@ function initPlayer() {
   adsLoader.addEventListener(
       google.ima.AdErrorEvent.Type.AD_ERROR, onAdError, false);
 
-  // Add metadata listener. Only used in LIVE streams. Timed metadata
-  // is handled differently by different video players, and the IMA SDK provides
-  // two ways to pass in metadata, StreamManager.processMetadata() and
-  // StreamManager.onTimedMetadata().
+  // Add metadata listener. Timed metadata is handled differently by different
+  // video players, and the IMA SDK provides two ways to pass in metadata,
+  // StreamManager.processMetadata() and StreamManager.onTimedMetadata().
   //
   // Use StreamManager.onTimedMetadata() if your video player parses
   // the metadata itself.
