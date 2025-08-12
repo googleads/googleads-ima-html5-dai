@@ -160,7 +160,7 @@ input[type="radio"] {
 }
 
 #add-ad-tag-parameter-button {
-  margin: 10px 0 0 14px;
+  margin: 10px 0 0 0;
 }
 
 .ad-tag-parameter-key-label {
@@ -171,14 +171,21 @@ input[type="radio"] {
   margin: 0 4px;
 }
 
-.ad-tag-parameter-warning {
-  color: red;
+.ad-tag-parameter-note {
+  background-color: lightblue;
+  color: black;
   font-size: 12px;
   display: block;
+  width: fit-content;
+  padding: 6px;
+}
+
+.ad-tag-parameter-note > p {
+  margin: 0;
 }
 
 #add-omsdk-rule-button {
-  margin: 10px 0 0 14px;
+  margin: 10px 0 0 0;
 }
 
 .omsdk-setting-remove-button {
@@ -188,6 +195,22 @@ input[type="radio"] {
 #container {
   max-width: 900px;
   width: 100%;
+}
+
+#shareable-url-button {
+  margin-top: 15px;
+}
+
+#shareable-url-container {
+  width: 100%;
+  height: fit-content;
+  padding: 10px;
+  background-color: lightgray;
+  font-size: 12px;
+}
+
+#shareable-url-container:empty {
+  display: none; /* Hides the div when it's empty */
 }
 
 #video-player {

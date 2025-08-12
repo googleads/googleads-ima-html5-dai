@@ -92,20 +92,20 @@
             </div>
             <span id="sample-ad-tag-parameter" class="link hidden">(Sample)</span>
             <div id="ad-tag-parameters-container" class="hidden">
+              <div class="ad-tag-parameter-note">
+                <p>
+                  Note: IMA accepts ad tag parameter strings without encoded character (%).
+                  <br>
+                  To avoid double encoding, make sure your parameter's values
+                  <br>
+                  don't contain encoded values, such as %3D, %26, %2C...
+                </p>
+              </div>
               <div class="ad-tag-parameter">
                 <label>Parameter</label>
                 <input list="ad-tag-parameters-list" class="ad-tag-parameters-choice">
                 <label>Value</label>
                 <input type="text" class="input-group ad-tag-parameter-value"/>
-                <div class="ad-tag-parameter-warning hidden">
-                  <p>
-                    Warning: Your parameter's value contains an encoding character (%).
-                    <br>
-                    To avoid double encoding, please make sure your parameter's value
-                    <br>
-                    value doesn't contain encoded values, such as %3D, %26, %2C...
-                  </p>
-                </div>
               </div>
               <button id="add-ad-tag-parameter-button" type="button" class="button button-blue">Add parameter</button>
             </div>
@@ -144,6 +144,8 @@
             </div>
           </div>
         </div>
+        <button id="shareable-url-button" type="button" class="button button-blue">Create shareable URL</button>
+        <div id="shareable-url-container"></div>
 
         <div id="video-player">
           <div id="ad-ui"></div>
@@ -175,15 +177,6 @@
           <label>Value</label>
           <input type="text" class="input-group ad-tag-parameter-value"/>
           <button class="button ad-tag-parameter-remove-button">Remove</button>
-          <div class="ad-tag-parameter-warning hidden">
-            <p>
-              Warning: Your parameter's value contains an encoding character (%).
-              <br>
-              To avoid double encoding, please make sure your parameter's value
-              <br>
-              value doesn't contain encoded values, such as %3D, %26, %2C...
-            </p>
-          </div>
         </div>
       </template>
 
