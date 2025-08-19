@@ -38,6 +38,14 @@ This project hosts samples for the
 Your favorite text editor. An HTML5 compliant browser. A webserver on which to
 host the sample.
 
+### Documentation Snippets
+
+This repository contains code snippets used in developer documentation for the
+[IMA HTML5 SDK](https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5/get-started).
+
+The `/doc_snippets` directory contains code snippets from our developer
+documentation to provide more context for implementing specific APIs.
+
 ### More Info
 
 For more information, see the documentation at
