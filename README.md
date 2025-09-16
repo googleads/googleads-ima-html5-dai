@@ -32,6 +32,9 @@ This project hosts samples for the
 *   [hbbtv](https://github.com/googleads/googleads-ima-html5-dai/tree/main/hbbtv) -
     Simple example for requesting and playing ad pods with
     [HbbTV](https://developer.hbbtv.org/).
+*   [Server Guided Ad Insertion (SGAI) Client-side HLS.js](https://github.com/googleads/googleads-ima-html5-dai/tree/main/SGAIClientSideExamples/hls_js) -
+    SGAI client-side example for on-device stitching of Google-provided ad
+    breaks.
 
 ### Requirements
 
