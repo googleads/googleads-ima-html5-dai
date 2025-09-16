@@ -1,0 +1,66 @@
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <link rel="stylesheet" href="styles.css">
+  <title>SGAI client-side demo using HLS.js</title>
+</head>
+<body>
+  <div id="content">
+    <h1>SGAI client-side HLS Sample</h1>
+
+    <section class="bordered">
+      <form>
+        <div class="form-row">
+          <label for="content-stream-url">Content stream:</label>
+          <input id="content-stream-url" type="text"
+              value="https://storage.googleapis.com/interactive-media-ads/media/bbb.m3u8" />
+        </div>
+      </form>
+    </section>
+
+    <section class="bordered">
+      <form>
+        <div class="form-row">
+          <label for="network-code">Network Code:</label>
+          <input id="network-code" type="text"  value="21775744923"/>
+        </div>
+        <div class="form-row">
+          <label for="custom-asset-key">Custom Asset Key:</label>
+          <input id="custom-asset-key" type="text" value="sgai-hls-live" />
+        </div>
+        <div class="form-row">
+          <label for="seconds-to-ad-break">Seconds to next ad break:</label>
+          <input id="seconds-to-ad-break" type="text" value="10" />
+        </div>
+        <button id="play-content-stream">Make stream request and play content</button>
+        <button id="insert-ad-break" disabled="true"
+            title="Enabled when the content stream starts.">
+          Insert ad break
+        </button>
+      </form>
+    </section>
+
+    <section>
+      <div id="video-status">Content is not playing</div>
+
+      <div id="video-container" class="bordered">
+        <video id="video"></video>
+        <div id="ad-ui"></div>
+      </div>
+    </section>
+
+    <button id="resume-ad" disabled="true"
+        title="Enabled when IMA pauses ads from navigating to the click-through URL.">
+      Resume ad
+    </button>
+
+    <section>
+      <div id="log"></div>
+    </section>
+
+  </div>
+  <script src="https://imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script>
+  <script src="player.js"></script>
+</body>
+</html>
