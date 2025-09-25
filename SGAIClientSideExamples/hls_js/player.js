@@ -7,6 +7,8 @@ let streamManager;
 // The DAI session ID, set following STREAM_INITIALIZED event, after the
 // PodStreamRequest is successful.
 let streamId;
+// Track if the content video needs to seek to live head.
+let isSeekingToLive = false;
 
 // DOM element references
 const setSampleContentStreamButton =
@@ -23,17 +25,18 @@ const resumeAdButton = document.getElementById("resume-ad");
 
 // Container for IMA SDK to display ad UI elements.
 const adUiElement = document.getElementById("ad-ui");
-const videoElement = document.getElementById("video");
+const contentVideoElement = document.getElementById("video");
+const adVideoElement = document.getElementById("video-ads");
 const logElement = document.getElementById("log");
 
 /**
  * Initializes the page, including HLS.js instances and the IMA StreamManager.
  * This is the main entry point.
  */
-function init() {
-  initContentHandler();
-  initAdsHandler();
-  initiateStreamManager();
+function initializeApp() {
+  initializeContentHandler();
+  initializeAdsHandler();
+  initializeStreamManager();
 
   insertAdBreakButton.onclick = insertAdBreak;
   playContentStreamButton.onclick = (e) => {
@@ -48,33 +51,39 @@ function init() {
     // Loads the content stream and plays it automatically.
     loadContentStream();
   };
+
+  // Listen for the `seeked` event on the video element.
+  video.addEventListener('seeked', () => {
+    // Check if the seek operation was for resuming playback following an ad.
+    // This ensures a more seamless transition to the live play head.
+    if (isSeekingToLive) {
+      log('Seek complete, resuming playback...');
+      resumeContentStream();
+      isSeekingToLive = false;
+    }
+  });
 }
 
 /**
  * Initializes the HLS.js instance that loads and parses the content m3u8
  * playlist.
  */
-function initContentHandler() {
+function initializeContentHandler() {
   contentHandler = new Hls();
   contentHandler.on(Hls.Events.MANIFEST_PARSED, () => {
-    contentHandler.attachMedia(videoElement);
+    contentHandler.attachMedia(contentVideoElement);
   });
   contentHandler.on(Hls.Events.MEDIA_ATTACHED, () => {
     setStatus("Content is playing");
-    videoElement.play();
+    contentVideoElement.play();
   });
 }
 
 /**
  * Initializes the HLS.js instance that loads and parses the ad pod manifest.
  */
-function initAdsHandler() {
+function initializeAdsHandler() {
   adsHandler = new Hls();
-  adsHandler.on(Hls.Events.MEDIA_ATTACHED, () => {
-    // Auto play the ad stream as soon as the player is ready.
-    setStatus("Ad break is playing");
-    videoElement.play();
-  });
   // Listener to process ID3 metadata for the stream manager.
   adsHandler.on(Hls.Events.FRAG_PARSING_METADATA, (event, data) => {
     if (streamManager && data) {
@@ -102,10 +111,11 @@ function insertAdBreak(e) {
     let secondsUntilAdBreak = parseInt(secondsUntilAdBreakInput.value);
     setTimeout(resolve, 1000 * secondsUntilAdBreak);
     const timer = setInterval(() => {
-      setStatus("Ad break starting in " + secondsUntilAdBreak + " seconds");
       secondsUntilAdBreak--;
       if (secondsUntilAdBreak < 1) {
         clearInterval(timer);
+      } else {
+        setStatus("Ad break starting in " + secondsUntilAdBreak + " seconds");
       }
     }, 1000);
   });
@@ -113,18 +123,24 @@ function insertAdBreak(e) {
   // Create an ad pod identifier. In production app, this identifier value must
   // be the same for all concurrent viewers to request the ad pod at the same
   // ad break time.
-  const adBreakId = Math.floor(videoElement.currentTime * 1000000);
+  const adBreakId = Math.floor(contentVideoElement.currentTime * 1000000);
   // Construct the ad pod request URL for the next ad break.
   const adPodUrl = `https://dai.google.com/linear/pods/v1/hls/network/${networkCodeInput.value}/custom_asset/${customAssetKeyInput.value}/ad_break_id/ab${adBreakId}.m3u8?stream_id=${streamId}&pd=31000`;
   log(`Ad break request: ${adPodUrl}`);
-  adsHandler.loadSource(adPodUrl);
-  // When the scheduled time has come and the ad pod manifest is parsed, set the
-  // `videoElement` to play ads.
+  adsHandler.once(Hls.Events.MEDIA_DETACHED, () => {
+    adsHandler.attachMedia(adVideoElement);
+    adsHandler.loadSource(adPodUrl);
+  });
+  adsHandler.detachMedia();
+
+  // When the scheduled time has come, the ad pod manifest is parsed, and media
+  // is attached. Now the ad can play.
   Promise.all([adsManifestParsingPromise, adBreakTimingPromise]).then(() => {
-    contentHandler.once(Hls.Events.MEDIA_DETACHED, () => {
-      adsHandler.attachMedia(videoElement);
-    });
-    contentHandler.detachMedia();
+    adVideoElement.classList.remove("hidden");
+    contentVideoElement.classList.add("hidden");
+    contentVideoElement.pause();
+    setStatus("Ad is playing");
+    adVideoElement.play();
   });
 }
 
@@ -137,21 +153,40 @@ function loadContentStream() {
 }
 
 /**
- * Resumes the content stream following an ad break.
+ * Handle seeking to the live playhead if needed, and resuming content after an ad break.
+ */
+function onAdBreakEnded() {
+  insertAdBreakButton.disabled = false;
+  // Seek to the live edge after the ad break.
+  if (contentHandler.liveSyncPosition) {
+    log('Seeking to live edge');
+    isSeekingToLive = true;
+    video.currentTime = contentHandler.liveSyncPosition;
+  } else {
+    resumeContentStream();
+  }
+}
+
+/**
+ * Resumes the content stream.
  */
 function resumeContentStream() {
   insertAdBreakButton.disabled = false;
-  contentHandler.attachMedia(videoElement);
+  contentVideoElement.classList.remove("hidden");
+  adVideoElement.classList.add("hidden");
+  adVideoElement.pause();
+  setStatus("Content has resumed playing");
+  contentVideoElement.play();
 }
 
 /**
  * Creates the IMA StreamManager and sets ad event listeners.
  */
-function initiateStreamManager() {
+function initializeStreamManager() {
   if (!streamManager) {
     // The adUiElement is the container object for ad UI elements.
     streamManager = new google.ima.dai.api.StreamManager(
-      videoElement,
+      adVideoElement,
       adUiElement
     );
     // Register listeners for various stream events.
@@ -173,7 +208,7 @@ function initiateStreamManager() {
   // navigates to to the clickthrough URL.
   resumeAdButton.onclick = (e) => {
     e.preventDefault();
-    videoElement.play();
+    adVideoElement.play();
     resumeAdButton.disabled = true;
   };
 }
@@ -215,7 +250,7 @@ function onStreamEvent(e) {
     case google.ima.dai.api.StreamEvent.Type.AD_BREAK_ENDED:
       log("Ad break ended");
       adsHandler.detachMedia();
-      resumeContentStream();
+      onAdBreakEnded();
       break;
     case google.ima.dai.api.StreamEvent.Type.PAUSED:
       resumeAdButton.disabled = false;
@@ -264,5 +299,5 @@ function logEvent(event) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  init();
+  initializeApp();
 });
