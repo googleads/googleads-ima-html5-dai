@@ -45,7 +45,10 @@
       <div id="video-status">Content is not playing</div>
 
       <div id="video-container" class="bordered">
-        <video id="video"></video>
+        <!-- Video elements must use 'playsinline' for this app to switch between ads and content,
+        and for the IMA ad UI to function properly -->
+        <video id="video" playsinline="true"></video>
+        <video id="video-ads" class="hidden" playsinline="true"></video>
         <div id="ad-ui"></div>
       </div>
     </section>
