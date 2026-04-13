@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="style.css"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <title>DAI SDK for HTML5 Video Suite Inspector</title>
+    <meta
+      name="description"
+      content="A test page to validate loading and playing live and VOD streams with ads using
+      the DAI SDK for HTML5." />
+  </head>
+  <body>
+    <div id="top-logo-bar">
+      <p>
+        <a href="https://developers.google.com/interactive-media-ads" target="_blank">Interactive Media Ads SDKs</a> >
+        <a href="https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5" target="_blank">DAI SDK for HTML5</a>
+      </p>
+    </div>
+    <div id="top-link-bar">
+      <a href="https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5" target="_blank">Guides</a>
+      <a href="https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5/reference/js" target="_blank">Reference</a>
+      <a href="https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5/resources" target="_blank">Resources</a>
+      <a href="https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5/download" target="_blank">Download</a>
+    </div>
+    <div id="main-container">
+      <h1>DAI SDK for HTML5 Video Suite Inspector</h1>
+
+      <h4>DAI documentation links</h4>
+      <ul>
+        <li><a href="https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5" target="_blank">
+            DAI SDK for HTML5 getting started guide
+        </a></li>
+        <li><a href="https://github.com/googleads/googleads-ima-html5-dai" target="_blank">
+            DAI SDK for HTML5 sample apps
+        </a></li>
+        <li><a href="https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5/streams" target="_blank">
+            Sample streams
+        </a></li>
+        <li><a href="https://support.google.com/admanager/answer/7320899" target="_blank">
+          Google Ad Manager stream targeting parameters
+        </a></li>
+        <li><a href="https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5/omsdk" target="_blank">
+          DAI SDK for HTML5 Open Measurement guide
+        </a></li>
+      </ul>
+      <div id="container">
+        <div id="input-wrapper">
+          <strong>Stream type:</strong>
+          <div class="radio-group">
+            <input type="radio" id="live-radio" name="stream-type" checked/>
+            <label for="live-radio">Live (<span id="sample-live-link" class="link">Sample</span>)</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="vod-radio" name="stream-type"/>
+            <label for="vod-radio">VOD (<span id="sample-vod-link" class="link">Sample</span>)</label>
+          </div>
+          <div id="live-inputs" class="input-group">
+            <label for="asset-key" class="input-label-reset input-group">Asset key: </label>
+            <input type="text" id="asset-key" class="input-group"/><br />
+            <label for="live-api-key" class="input-label-reset input-group">API Key (optional): </label>
+            <input type="text" id="live-api-key" class="input-group"/>
+          </div>
+          <div id="vod-inputs" class="input-group">
+            <label for="cms-id" class="input-label-reset input-group">CMS ID: </label>
+            <input type="text" id="cms-id" class="input-group"/>
+            <label for="video-id" class="input-label-reset input-group">Video ID: </label>
+            <input type="text" id="video-id" class="input-group"/><br />
+            <label for="vod-api-key" class="input-label-reset input-group">API Key (optional): </label>
+            <input type="text" id="vod-api-key" class="input-group"/>
+          </div>
+          <div id="stream-formats">
+            <strong>Stream format:</strong>
+            <div class="radio-group">
+              <input type="radio" id="hls-radio" name="stream-format" checked/>
+              <label for="hls-radio">HLS</label>
+            </div>
+            <div class="radio-group">
+              <input type="radio" id="dash-radio" name="stream-format"/>
+              <label for="dash-radio">DASH</label>
+            </div>
+          </div>
+          <div id="ad-tag-parameters">
+            <strong>Include targeting parameters:</strong>
+            <div class="radio-group">
+              <input type="radio" id="no-include-ad-tag-parameters" name="ad-tag-param-radio" checked>
+              <label for="no-include-ad-tag-parameters">No</label>
+            </div>
+            <div class="radio-group">
+              <input type="radio" id="yes-include-ad-tag-parameters" name="ad-tag-param-radio">
+              <label for="yes-include-ad-tag-parameters">Yes</label>
+            </div>
+            <span id="sample-ad-tag-parameter" class="link hidden">(Sample)</span>
+            <div id="ad-tag-parameters-container" class="hidden">
+              <div class="ad-tag-parameter-note">
+                <p>
+                  Note: IMA accepts ad tag parameter strings without encoded character (%).
+                  <br>
+                  To avoid double encoding, make sure your parameter's values
+                  <br>
+                  don't contain encoded values, such as %3D, %26, %2C...
+                </p>
+              </div>
+              <div class="ad-tag-parameter">
+                <label>Parameter</label>
+                <input list="ad-tag-parameters-list" class="ad-tag-parameters-choice">
+                <label>Value</label>
+                <input type="text" class="input-group ad-tag-parameter-value"/>
+              </div>
+              <button id="add-ad-tag-parameter-button" type="button" class="button button-blue">Add parameter</button>
+            </div>
+          </div>
+          <div id="omsdk-settings">
+            <strong>Customize Open Measurement access rules:</strong>
+            <div class="radio-group">
+              <input type="radio" id="no-include-omsdk-rules" name="omsdk-param-radio" checked>
+              <label for="no-include-omsdk-rules">No</label>
+            </div>
+            <div class="radio-group">
+              <input type="radio" id="yes-include-omsdk-rules" name="omsdk-param-radio">
+              <label for="yes-include-omsdk-rules">Yes</label>
+            </div>
+            <div id="omsdk-rules-container" class="hidden">
+              <div class="omsdk-rule">
+                <label>Verification vendor</label>
+                <select class="omsdk-verification-vendor-select">
+                  <option value="COMSCORE">COMSCORE</option>
+                  <option value="DOUBLEVERIFY">DOUBLEVERIFY</option>
+                  <option value="GOOGLE">GOOGLE</option>
+                  <option value="INTEGRAL_AD_SCIENCE">INTEGRAL_AD_SCIENCE</option>
+                  <option value="MEETRICS">MEETRICS</option>
+                  <option value="MOAT">MOAT</option>
+                  <option value="NIELSEN">NIELSEN</option>
+                  <option value="PIXELATE">PIXELATE</option>
+                  <option value="OTHER">OTHER</option>
+                </select>
+                <label>Access mode</label>
+                <select class="omsdk-access-mode-select">
+                  <option value="LIMITED">LIMITED</option>
+                  <option value="FULL">FULL</option>
+                </select>
+              </div>
+              <button id="add-omsdk-rule-button" type="button" class="button button-blue">Add access rule</button>
+            </div>
+          </div>
+        </div>
+        <button id="shareable-url-button" type="button" class="button button-blue">Create shareable URL</button>
+        <div id="shareable-url-container"></div>
+
+        <div id="video-player">
+          <div id="ad-ui"></div>
+          <video id="hls-content" class="content"></video>
+          <video id="dash-content" class="content"></video>
+        </div>
+        <div id="button-container">
+          <button id="load-button" type="button" class="button button-blue">Load</button>
+          <button id="play-button" type="button" class="button button-blue button-disabled" disabled>Play</button>
+          <button id="bookmark-button" type="button" class="button button-blue button-disabled" disabled>Save Bookmark to URL</button>
+          <button id="reset-button" type="button" class="button button-blue button-disabled" disabled>Reset</button>
+        </div>
+        <div id="bookmark-wrapper">
+          <div id="bookmark-info">
+            To test the bookmark feature, copy this URL to a new tab, load the page,
+            and request the same VOD stream you requested here. It will load at the
+            bookmarked timestamp.
+          </div>
+          <textarea id="bookmark-link-text" wrap="soft"></textarea>
+        </div>
+        <div id="companion"></div>
+        <div id="console"></div>
+      </div>
+
+      <template id="template-ad-tag-parameter">
+        <div class="ad-tag-parameter">
+          <label>Parameter</label>
+          <input list="ad-tag-parameters-list" class="ad-tag-parameters-choice">
+          <label>Value</label>
+          <input type="text" class="input-group ad-tag-parameter-value"/>
+          <button class="button ad-tag-parameter-remove-button">Remove</button>
+        </div>
+      </template>
+
+      <datalist id="ad-tag-parameters-list">
+        <option value="addtl_consent"></option>
+        <option value="an"></option>
+        <option value="ciu_szs"></option>
+        <option value="cust_params"></option>
+        <option value="description_url"></option>
+        <option value="gdpr"></option>
+        <option value="gdpr_consent"></option>
+        <option value="idtype"></option>
+        <option value="is_lat"></option>
+        <option value="iu"></option>
+        <option value="ltd"></option>
+        <option value="mpt"></option>
+        <option value="mpv"></option>
+        <option value="npa"></option>
+        <option value="ppid"></option>
+        <option value="ptpl"></option>
+        <option value="ptpln"></option>
+        <option value="rdid"></option>
+        <option value="rdp"></option>
+        <option value="sid"></option>
+        <option value="sz"></option>
+        <option value="tfcd"></option>
+        <option value="trt"></option>
+        <option value="vconp"></option>
+        <option value="vpa"></option>
+        <option value="vpmute"></option>
+        <option value="wta"></option>
+      </datalist>
+
+      <template id="template-omsdk-rule">
+        <div class="omsdk-rule">
+          <label>Verification vendor</label>
+          <select class="omsdk-verification-vendor-select">
+            <option value="COMSCORE">COMSCORE</option>
+            <option value="DOUBLEVERIFY">DOUBLEVERIFY</option>
+            <option value="GOOGLE">GOOGLE</option>
+            <option value="INTEGRAL_AD_SCIENCE">INTEGRAL_AD_SCIENCE</option>
+            <option value="MEETRICS">MEETRICS</option>
+            <option value="MOAT">MOAT</option>
+            <option value="NIELSEN">NIELSEN</option>
+            <option value="PIXELATE">PIXELATE</option>
+            <option value="OTHER">OTHER</option>
+          </select>
+          <label>Access mode</label>
+          <select class="omsdk-access-mode-select">
+            <option value="LIMITED">LIMITED</option>
+            <option value="FULL">FULL</option>
+          </select>
+          <button class="button omsdk-setting-remove-button">Remove</button>
+        </div>
+      </template>
+
+      <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+      <script src="https://cdn.jsdelivr.net/npm/shaka-player@latest/dist/shaka-player.compiled.js"></script>
+      <script src="https://imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script>
+      <script src="dai_vsi.js"></script>
+
+      <script>
+        new Controller(document.URL);
+      </script>
+    </div>
+  </body>
+</html>
