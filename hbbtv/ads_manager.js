@@ -50,18 +50,60 @@ var AdManager = function(videoPlayer) {
 };
 // [END create_ad_manager]
 
+
+/**
+ * Helper function to generate alphabetical HMAC token.
+ * @param {!Object} params The parameters to be included in the token.
+ * @param {string} secret The secret key.
+ * @return {string} The generated token.
+ */
+AdManager.prototype.generateAuthToken = function (params, secret) {
+  var keys = [];
+  for (var key in params) {
+    if (params.hasOwnProperty(key)) {
+      keys.push(key);
+    }
+  }
+  keys.sort();
+
+  var tokenPairs = [];
+  for (var i = 0; i < keys.length; i++) {
+    tokenPairs.push(keys[i] + '=' + params[keys[i]]);
+  }
+  var tokenString = tokenPairs.join('~');
+
+  var hash = CryptoJS.HmacSHA256(tokenString, secret);
+  return tokenString + '~hmac=' + CryptoJS.enc.Hex.stringify(hash);
+};
+
 // [START ads_manager_request_stream]
 /**
  * Makes a pod stream request.
  * @param {string} networkCode The network code.
  * @param {string} customAssetKey The custom asset key.
  */
-AdManager.prototype.requestStream = function(networkCode, customAssetKey) {
+AdManager.prototype.requestStream = function (networkCode, customAssetKey) {
   var streamRequest = new google.ima.dai.api.PodStreamRequest();
+  var secretKey = getStreamSecretKeys();
+
   streamRequest.networkCode = networkCode;
   streamRequest.customAssetKey = customAssetKey;
   streamRequest.format = 'dash';
-  debugView.log('AdsManager: make PodStreamRequest');
+
+  if (secretKey.STREAM_CREATE_SECRET) {
+    var expirationTime = Math.trunc(new Date().getTime() / 1000) + 3600;
+    var params = {
+      custom_asset_key: customAssetKey,
+      exp: expirationTime,
+      network_code: networkCode
+    };
+    streamRequest.authToken =
+        this.generateAuthToken(params, secretKey.STREAM_CREATE_SECRET);
+    debugView.log('AdsManager: make Auth-PodStreamRequest');
+  } else {
+    debugView.log('AdsManager: make PodStreamRequest without auth');
+  }
+
   this.streamManager.requestStream(streamRequest);
 };
 // [END ads_manager_request_stream]
@@ -125,28 +167,43 @@ AdManager.prototype.onEmsgEvent = function(event) {
  * @param {string} customAssetKey The custom asset key.
  * @param {number} podDuration The duration of the ad pod.
  */
-AdManager.prototype.loadAdPodManifest =
-    function(networkCode, customAssetKey, podDuration) {
+AdManager.prototype.loadAdPodManifest = function (networkCode, customAssetKey, podDuration) {
   if (!this.streamData) {
-    debugView.log('IMA SDK: No DAI pod session registered.');
+    debugView.log('AdsManager: No stream data available.');
     return;
   }
 
-  var MANIFEST_BASE_URL = 'https://dai.google.com/linear/pods/v1/dash/network/';
-  // Method: DASH pod manifest reference docs:
-  // https://developers.google.com/ad-manager/dynamic-ad-insertion/api/pod-serving/reference/live#method_dash_pod_manifest
-  var manifestUrl = MANIFEST_BASE_URL + networkCode + '/custom_asset/' +
-    customAssetKey + '/stream/' + this.streamData.streamId + '/pod/' +
-    this.getPodId() + '/manifest.mpd?pd=' + podDuration;
+  var adBreakId = this.getAdBreakId();
+  var expirationTime = Math.trunc(new Date().getTime() / 1000) + 3600;
+
+  var params = {
+    ad_break_id: adBreakId,
+    custom_asset_key: customAssetKey,
+    exp: expirationTime,
+    network_code: networkCode,
+    pd: podDuration
+  };
+
+  var secretKey = getStreamSecretKeys();
+  var token = this.generateAuthToken(params, secretKey.MANIFEST_SECRET);
+  var encodedToken = encodeURIComponent(token);
+
+  var manifestUrl = 'https://dai.google.com/linear/pods/v1/dash/network/' +
+    networkCode + '/custom_asset/' + customAssetKey + '/stream/' +
+    this.streamData.streamId + '/ad_break_id/' + adBreakId +
+    '/manifest.mpd?pd=' + podDuration + '&auth-token=' + encodedToken;
+
   this.videoPlayer.preload(manifestUrl);
 };
 // [END ads_manager_load_manifest]
 
 /**
- * Helper Function to get an unused pod ID.
- * In production the pod ID is determined by an Early Break Notification Call.
- * @return {string} The ad pod ID.
+ * Helper Function to get an unused ad break ID.
+ * Ad Break Id is an alpha numeric string.
+ * In production the Ad Break ID is determined by your ad signalling stack,
+ * propagated through a SCTE35 or other cue markers.
+ * @return {string} The ad break ID.
  */
-AdManager.prototype.getPodId = function() {
-  return Math.trunc(new Date().getTime() / 60000);
+AdManager.prototype.getAdBreakId = function () {
+  return "ab" + Math.trunc(new Date().getTime() / 60000);
 };

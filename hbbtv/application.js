@@ -32,6 +32,23 @@ var AD_BREAK_EVENT_END = 'adBreakEnd';
 var NETWORK_CODE = '';
 var CUSTOM_ASSET_KEY = '';
 
+/**
+ * Returns secret keys for creating auth tokens.
+ * These keys can be found in your Google
+ * Ad Manager account. See
+ * https://developers.google.com/ad-manager/dynamic-ad-insertion/api/pod-serving/live/stream-session-requests
+ * for more information.
+ * @return {!Object} Object containing STREAM_CREATE_SECRET and MANIFEST_SECRET.
+ */
+function getStreamSecretKeys() {
+  return {
+    /* Authentication is optional for Stream Creation requests. */
+    STREAM_CREATE_SECRET: "YOUR_SECRET_KEY_HERE",
+    /* Authentication is mandatory for Pod Manifest requests. */
+    MANIFEST_SECRET: "YOUR_SECRET_KEY_HERE"
+  };
+}
+
 var app = null;
 var debugView = null;
 
