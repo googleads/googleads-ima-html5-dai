@@ -14,7 +14,7 @@
         <div class="form-row">
           <label for="content-stream-url">Content stream:</label>
           <input id="content-stream-url" type="text"
-              value="https://storage.googleapis.com/interactive-media-ads/media/bbb.m3u8" />
+              value="https://contentsim.sandbox.google.com/content/e32520a6-d0d1-4609-be11-b686ccf1cf11/linear/multivariant.m3u8" />
         </div>
       </form>
     </section>
@@ -27,7 +27,12 @@
         </div>
         <div class="form-row">
           <label for="custom-asset-key">Custom Asset Key:</label>
-          <input id="custom-asset-key" type="text" value="sgai-hls-live" />
+          <input id="custom-asset-key" type="text" value="hls-pod-serving-manifest-auth-pod" />
+        </div>
+        <div class="form-row">
+          <label for="pod-hmac-key">Pod Resource Authentication HMAC Key:</label>
+          <!-- For more information about sample custom asset keys and HMAC key, see https://developers.google.com/ad-manager/dynamic-ad-insertion/streams#sgai_livestream_events -->
+          <input id="pod-hmac-key" type="text" value="EB08906075215AD341CE0EF959300C36E430BF6134FB12747D7DBE1DD475328C" />
         </div>
         <div class="form-row">
           <label for="seconds-to-ad-break">Seconds to next ad break:</label>

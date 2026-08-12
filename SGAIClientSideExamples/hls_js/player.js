@@ -18,6 +18,7 @@ const setSampleAdBreakParamsButton = document.getElementById("ad-break-sample");
 const contentStreamUrlInput = document.getElementById("content-stream-url");
 const networkCodeInput = document.getElementById("network-code");
 const customAssetKeyInput = document.getElementById("custom-asset-key");
+const podHMACKeyInput = document.getElementById("pod-hmac-key");
 const playContentStreamButton = document.getElementById("play-content-stream");
 const secondsUntilAdBreakInput = document.getElementById("seconds-to-ad-break");
 const insertAdBreakButton = document.getElementById("insert-ad-break");
@@ -98,7 +99,7 @@ function initializeAdsHandler() {
  * Inserts an ad break into the content stream.
  * @param {!Event} e - the event object
  */
-function insertAdBreak(e) {
+async function insertAdBreak(e) {
   e.preventDefault();
   insertAdBreakButton.disabled = true;
   const adsManifestParsingPromise = new Promise((resolve, reject) => {
@@ -123,9 +124,22 @@ function insertAdBreak(e) {
   // Create an ad pod identifier. In production app, this identifier value must
   // be the same for all concurrent viewers to request the ad pod at the same
   // ad break time.
-  const adBreakId = Math.floor(contentVideoElement.currentTime * 1000000);
-  // Construct the ad pod request URL for the next ad break.
-  const adPodUrl = `https://dai.google.com/linear/pods/v1/hls/network/${networkCodeInput.value}/custom_asset/${customAssetKeyInput.value}/ad_break_id/ab${adBreakId}.m3u8?stream_id=${streamId}&pd=31000`;
+  const podId = Math.floor(Date.now() / 60000);
+  const adBreakId = `ab${podId}`;
+  const adBreakParams = {
+    ad_break_id: adBreakId,
+    custom_asset_key: customAssetKeyInput.value,
+    network_code: networkCodeInput.value,
+    pd: '31000',
+    stream_id: streamId,
+    exp: Date.now() + 10000
+  };
+  const hmacToken = await generateHMACToken(podHMACKeyInput.value, adBreakParams);
+  const adPodUrl = `https://dai.google.com/linear/pods/v1/hls/network/${
+      adBreakParams.network_code}/custom_asset/${
+      adBreakParams.custom_asset_key}/ad_break_id/${adBreakParams.ad_break_id}.m3u8?stream_id=${
+      adBreakParams.stream_id}&pd=${adBreakParams.pd}&auth-token=${hmacToken}`;
+
   log(`Ad break request: ${adPodUrl}`);
   adsHandler.once(Hls.Events.MEDIA_DETACHED, () => {
     adsHandler.attachMedia(adVideoElement);
@@ -143,6 +157,51 @@ function insertAdBreak(e) {
     adVideoElement.play();
   });
 }
+
+/**
+ * Generates an HMAC token for authenticating pod requests.
+ * @param {string} hmacKey - The HMAC secret key.
+ * @param {!Object} params - The parameters to sign.
+ * @return {!Promise<string>} The encoded signed token string.
+ */
+const generateHMACToken = async (hmacKey, params) => {
+  // copybara:strip_begin(reason: Internal-specific logic)
+  // This block is for the INTERNAL version.
+  // It uses the client-side function to generate the HMAC token.
+  const sortedKeys = Object.keys(params).sort();
+  const tokenString = sortedKeys.map(key => `${key}=${params[key]}`).join('~');
+
+  log(`Token string to sign: ${tokenString}`);
+
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(hmacKey);
+  const messageData = encoder.encode(tokenString);
+
+  const cryptoKey = await window.crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+
+  const signature = await window.crypto.subtle.sign(
+    'HMAC',
+    cryptoKey,
+    messageData
+  );
+
+  const hashArray = Array.from(new Uint8Array(signature));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+  const signedTokenString = `${tokenString}~hmac=${hashHex}`;
+  return encodeURIComponent(signedTokenString);
+  // copybara:strip_end_and_replace_begin
+  // // TODO: Use a server-side function to generate the HMAC token. For more
+  // // details, see https://developers.google.com/ad-manager/dynamic-ad-insertion/api/pod-serving/live/pod-manifest-requests.
+  // throw new Error('HMAC token generation not implemented.');
+  // copybara:replace_end
+};
 
 /**
  * Loads the content stream.
